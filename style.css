@@ -778,3 +778,19 @@ header h1 {
     font-size: 0.7em;
   }
 }
+
+#regras-detalhadas {
+  display: none;
+}
+
+.modal-content.mostrando-detalhes #regras-resumidas {
+  display: none;
+}
+
+.modal-content.mostrando-detalhes #regras-detalhadas {
+  display: block;
+}
+
+#btn-toggle-regras {
+  background-color: #5a3a3a;
+}

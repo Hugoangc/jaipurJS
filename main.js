@@ -156,26 +156,44 @@ function renderizar() {
 
   limparSelecao();
 }
-
 document.addEventListener("DOMContentLoaded", () => {
   btnVender.addEventListener("click", onVenderClick);
   btnTrocar.addEventListener("click", onTrocarClick);
   btnPegarVacas.addEventListener("click", onPegarVacasClick);
   btnDesistir.addEventListener("click", onDesistirClick);
-
   btnJogarNovamente.addEventListener("click", () => location.reload());
+
+  const modalContentRegras = document.querySelector(
+    "#modal-regras .modal-content"
+  );
+  const btnToggleRegras = get("btn-toggle-regras");
+
   btnRegras.addEventListener("click", () => {
+    modalContentRegras.classList.remove("mostrando-detalhes");
+    btnToggleRegras.textContent = "Ver Regras Detalhadas";
     modalRegras.style.display = "flex";
+  });
+
+  btnToggleRegras.addEventListener("click", () => {
+    modalContentRegras.classList.toggle("mostrando-detalhes");
+
+    if (modalContentRegras.classList.contains("mostrando-detalhes")) {
+      btnToggleRegras.textContent = "Ver Resumo";
+    } else {
+      btnToggleRegras.textContent = "Ver Regras Detalhadas";
+    }
   });
 
   btnFecharRegras.addEventListener("click", () => {
     modalRegras.style.display = "none";
   });
+
   modalRegras.addEventListener("click", (event) => {
     if (event.target === modalRegras) {
       modalRegras.style.display = "none";
     }
   });
+
   document
     .querySelectorAll("#modal-dificuldade .modal-buttons button")
     .forEach((btn) => {
