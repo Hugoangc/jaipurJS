@@ -33,6 +33,3 @@ A rodada termina quando uma de duas condições é atingida:
 2.  Três pilhas de fichas de produtos no mercado acabam.
 
 Ao final da rodada, o jogador com a maior quantidade de vacas ganha um **bônus de 5 pontos**!
-1.  Clone este repositório para a sua máquina local.
-2.  Navegue até a pasta do projeto.
-3.  Abra o arquivo `index.html` em qualquer navegador moderno.
