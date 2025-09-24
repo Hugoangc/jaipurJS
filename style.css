@@ -6,6 +6,7 @@
   --cor-carta-verso: #a52a2a;
 }
 body {
+   zoom: 0.75;
   font-family: "Roboto", sans-serif;
   background-color: var(--cor-fundo);
   color: var(--cor-texto);
@@ -375,4 +376,5 @@ header {
     gap: 15px;
   }
 }
+
 
