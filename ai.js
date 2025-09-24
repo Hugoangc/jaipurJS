@@ -66,14 +66,14 @@ function avaliar_estado(estado, jogadorMax, jogadorMin) {
   return pontuacaoMax - pontuacaoMin;
 }
 
-function gerar_jogadas_possiveis(estado_atual) {
+function gerar_jogadas_possiveis(estado_atual, dificuldade) {
   const jogadas_possiveis = [];
   const jogadorDaVez =
     estado_atual.turno % 2 !== 0
       ? estado_atual.jogador1
       : estado_atual.jogador2;
 
-  // Ação 1: Comprarcarta
+  // Ação 1: Comprar carta
   if (jogadorDaVez.mao.length < 7) {
     for (let i = 0; i < estado_atual.mercado.cartas.length; i++) {
       if (estado_atual.mercado.cartas[i].tipo !== TipoCarta.VACA) {
@@ -110,6 +110,7 @@ function gerar_jogadas_possiveis(estado_atual) {
     jogadas_possiveis.push(novo_estado);
   }
 
+  // Ação 3: Vender mercadorias
   const contagemMao = {};
   jogadorDaVez.mao.forEach((c) => {
     contagemMao[c.tipo] = (contagemMao[c.tipo] || 0) + 1;
@@ -137,6 +138,9 @@ function gerar_jogadas_possiveis(estado_atual) {
     }
   }
 
+  // Ação 4: Trocar cartas 
+  const LIMITE_TROCA = 3; 
+
   const cartasMercadoParaTroca = [];
   estado_atual.mercado.cartas.forEach((carta, indice) => {
     if (carta.tipo !== TipoCarta.VACA) {
@@ -156,16 +160,46 @@ function gerar_jogadas_possiveis(estado_atual) {
     });
   }
 
+  const VALORES_HEURISTICOS = {
+    QUEIJO: 8,
+    OURO: 7,
+    CAFE: 6,
+    LEITE: 4,
+    DOCE_DE_LEITE: 4,
+    COURO: 3,
+    VACA: 1,
+  };
+
   for (
     let k = 2;
-    k <= Math.min(cartasMercadoParaTroca.length, cartasJogadorParaTroca.length);
+    k <=
+    Math.min(
+      cartasMercadoParaTroca.length,
+      cartasJogadorParaTroca.length,
+      LIMITE_TROCA
+    );
     k++
   ) {
     const combosMercado = gerarCombinacoes(cartasMercadoParaTroca, k);
     const combosJogador = gerarCombinacoes(cartasJogadorParaTroca, k);
 
     combosMercado.forEach((comboM) => {
+      const valorRecebido = comboM.reduce(
+        (acc, c) => acc + VALORES_HEURISTICOS[c.carta.tipo],
+        0
+      );
+
       combosJogador.forEach((comboJ) => {
+        const valorDado = comboJ.reduce(
+          (acc, c) => acc + VALORES_HEURISTICOS[c.carta.tipo],
+          0
+        );
+
+        const fatorDeMelhora = 1.2;
+        if (valorRecebido < valorDado * fatorDeMelhora) {
+          return; 
+        }
+
         const numCartasMaoDadas = comboJ.filter(
           (c) => c.origem === "mao"
         ).length;
@@ -182,7 +216,6 @@ function gerar_jogadas_possiveis(estado_atual) {
         const cartasParaJogador = comboM.map((c) => c.carta);
         const cartasParaMercado = comboJ.map((c) => c.carta);
 
-        // Remove as cartas do mercado e da mão do jogador no novo estado
         comboM
           .map((c) => c.indice)
           .sort((a, b) => b - a)
@@ -192,14 +225,10 @@ function gerar_jogadas_possiveis(estado_atual) {
           .map((c) => c.indice)
           .sort((a, b) => b - a);
         const vacasDoadas = comboJ.filter((c) => c.origem === "vaca").length;
-
         indicesMao.forEach((i) => jogador.mao.splice(i, 1));
         jogador.vacas.length -= vacasDoadas;
-
-        // Adiciona as novas cartas
         cartasParaJogador.forEach((c) => jogador.pegar_carta(c));
         cartasParaMercado.forEach((c) => novo_estado.mercado.cartas.push(c));
-
         novo_estado.turno++;
         jogadas_possiveis.push(novo_estado);
       });
@@ -214,7 +243,8 @@ function minimax_alfabeta(
   profundidade,
   alpha,
   beta,
-  eh_jogador_max
+  eh_jogador_max,
+  dificuldade
 ) {
   if (
     profundidade === 0 ||
@@ -238,7 +268,11 @@ function minimax_alfabeta(
     return avaliar_estado(estado_node, jMax, jMin);
   }
 
-  const proximas_jogadas = gerar_jogadas_possiveis(estado_node);
+  const proximas_jogadas = gerar_jogadas_possiveis(estado_node, dificuldade);
+
+  if (proximas_jogadas.length === 0) {
+    return eh_jogador_max ? -Infinity : Infinity;
+  }
 
   const jogadorMaxAtual = eh_jogador_max
     ? estado_node.turno % 2 !== 0
@@ -254,16 +288,11 @@ function minimax_alfabeta(
     : estado_node.turno % 2 !== 0
     ? estado_node.jogador1
     : estado_node.jogador2;
-
   proximas_jogadas.sort((a, b) => {
     const pontuacaoA = avaliar_estado(a, jogadorMaxAtual, jogadorMinAtual);
     const pontuacaoB = avaliar_estado(b, jogadorMaxAtual, jogadorMinAtual);
     return eh_jogador_max ? pontuacaoB - pontuacaoA : pontuacaoA - pontuacaoB;
   });
-
-  if (proximas_jogadas.length === 0) {
-    return eh_jogador_max ? -Infinity : Infinity;
-  }
 
   if (eh_jogador_max) {
     let melhor_valor = -Infinity;
@@ -273,7 +302,8 @@ function minimax_alfabeta(
         profundidade - 1,
         alpha,
         beta,
-        false
+        false,
+        dificuldade
       );
       melhor_valor = Math.max(melhor_valor, valor);
       alpha = Math.max(alpha, valor);
@@ -288,7 +318,8 @@ function minimax_alfabeta(
         profundidade - 1,
         alpha,
         beta,
-        true
+        true,
+        dificuldade
       );
       pior_valor = Math.min(pior_valor, valor);
       beta = Math.min(beta, valor);
@@ -298,23 +329,48 @@ function minimax_alfabeta(
   }
 }
 
-function encontrar_melhor_jogada_alfabeta(estado_atual, profundidade) {
-  const proximas_jogadas = gerar_jogadas_possiveis(estado_atual);
+function encontrar_melhor_jogada_alfabeta(
+  estado_atual,
+  profundidade,
+  dificuldade
+) {
+  const proximas_jogadas = gerar_jogadas_possiveis(estado_atual, dificuldade);
   if (proximas_jogadas.length === 0) return estado_atual;
-  let melhor_jogada = proximas_jogadas[0],
-    melhor_valor = -Infinity;
+
+  const jogadorMax =
+    estado_atual.turno % 2 !== 0
+      ? estado_atual.jogador1
+      : estado_atual.jogador2;
+  const jogadorMin =
+    estado_atual.turno % 2 !== 0
+      ? estado_atual.jogador2
+      : estado_atual.jogador1;
+
+  proximas_jogadas.sort((a, b) => {
+    const pontuacaoA = avaliar_estado(a, jogadorMax, jogadorMin);
+    const pontuacaoB = avaliar_estado(b, jogadorMax, jogadorMin);
+    return pontuacaoB - pontuacaoA;
+  });
+
+  let melhor_jogada = proximas_jogadas[0];
+  let melhor_valor = -Infinity;
+  let alpha = -Infinity;
+  let beta = Infinity;
+
   for (const jogada of proximas_jogadas) {
     const valor_da_jogada = minimax_alfabeta(
       jogada,
       profundidade - 1,
-      -Infinity,
-      Infinity,
-      false
+      alpha,
+      beta,
+      false,
+      dificuldade
     );
     if (valor_da_jogada > melhor_valor) {
       melhor_valor = valor_da_jogada;
       melhor_jogada = jogada;
     }
+    alpha = Math.max(alpha, melhor_valor);
   }
   return melhor_jogada;
 }

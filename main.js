@@ -156,6 +156,7 @@ function renderizar() {
 
   limparSelecao();
 }
+
 document.addEventListener("DOMContentLoaded", () => {
   btnVender.addEventListener("click", onVenderClick);
   btnTrocar.addEventListener("click", onTrocarClick);
@@ -435,18 +436,82 @@ function proximoTurno(mensagem) {
       document.body.style.pointerEvents = "none";
       notificar("Oponente está pensando...");
       setTimeout(() => {
-        const cloneEstado = estadoAtual.clone();
-        const melhorJogada = encontrar_melhor_jogada_alfabeta(
-          cloneEstado,
-          PROFUNDIDADE_IA
-        );
-        estadoAtual = melhorJogada;
-        notificar("Oponente jogou. É a sua vez.");
-        if (verificarFimDeRodada()) {
-          fimDeRodada();
-        } else {
+        function finalizarJogadaIA(melhorJogada) {
+          if (!melhorJogada) {
+            console.warn(
+              "Nenhuma jogada da IA foi encontrada. Buscando fallback de profundidade 1."
+            );
+            melhorJogada = encontrar_melhor_jogada_alfabeta(
+              estadoAtual.clone(),
+              1,
+              NOME_DIFICULDADE_IA
+            );
+          }
+
+          estadoAtual = melhorJogada;
+          notificar("Oponente jogou. É a sua vez.");
           document.body.style.pointerEvents = "auto";
           renderizar();
+
+          if (verificarFimDeRodada()) {
+            fimDeRodada();
+          }
+        }
+
+        if (
+          NOME_DIFICULDADE_IA === "Extremo" ||
+          NOME_DIFICULDADE_IA === "Difícil"
+        ) {
+          console.log("IA Extrema pensando com limite de tempo...");
+          const TEMPO_LIMITE_MS = 2000;
+          const inicio = performance.now();
+          let melhorJogadaGlobal = null;
+          let profundidadeAtual = 1;
+
+          function buscarEmProfundidadeIterativa() {
+            if (
+              performance.now() - inicio > TEMPO_LIMITE_MS ||
+              profundidadeAtual > PROFUNDIDADE_IA
+            ) {
+              console.log(
+                `Busca finalizada. Usando melhor jogada da profundidade ${
+                  profundidadeAtual - 1
+                }.`
+              );
+              finalizarJogadaIA(melhorJogadaGlobal);
+              return;
+            }
+
+            console.log(
+              `Iniciando busca na profundidade ${profundidadeAtual}...`
+            );
+            const cloneEstado = estadoAtual.clone();
+
+            const melhorJogadaDaProfundidade = encontrar_melhor_jogada_alfabeta(
+              cloneEstado,
+              profundidadeAtual,
+              NOME_DIFICULDADE_IA
+            );
+
+            if (performance.now() - inicio <= TEMPO_LIMITE_MS) {
+              melhorJogadaGlobal = melhorJogadaDaProfundidade;
+            }
+
+            profundidadeAtual++;
+            setTimeout(buscarEmProfundidadeIterativa, 0);
+          }
+          buscarEmProfundidadeIterativa();
+        } else {
+          console.log(
+            `IA Padrão pensando com profundidade fixa: ${PROFUNDIDADE_IA}`
+          );
+          const cloneEstado = estadoAtual.clone();
+          const melhorJogada = encontrar_melhor_jogada_alfabeta(
+            cloneEstado,
+            PROFUNDIDADE_IA,
+            NOME_DIFICULDADE_IA
+          );
+          finalizarJogadaIA(melhorJogada);
         }
       }, 500);
     }
