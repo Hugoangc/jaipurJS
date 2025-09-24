@@ -5,19 +5,18 @@
   --cor-destaque: #8b4513;
   --cor-carta-verso: #a52a2a;
 }
+
 body {
-  zoom: 0.75;
   font-family: "Roboto", sans-serif;
   background-color: var(--cor-fundo);
   color: var(--cor-texto);
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
   margin: 0;
-  padding: 20px;
+  padding: 10px;
   box-sizing: border-box;
   min-height: 100vh;
+  overflow-x: hidden;
 }
+
 h1,
 h2,
 h3 {
@@ -28,12 +27,13 @@ h3 {
 }
 
 #game-container {
-  width: 75%;
+  width: 100%;
   max-width: 1200px;
-  min-width: 600px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 8px;
+  min-height: calc(100vh - 20px);
 }
 
 header {
@@ -41,54 +41,73 @@ header {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  padding: 10px 20px;
+  padding: 8px 15px;
   background-color: var(--cor-tabuleiro);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+header h1 {
+  font-size: 1.5rem;
+}
+
 #game-info {
   display: flex;
-  gap: 20px;
-  font-size: 1.1em;
+  gap: 15px;
+  font-size: 0.9em;
   flex-wrap: wrap;
 }
+
+/* Áreas do jogo */
 .player-area,
 #central-area,
 #info-valores {
   background-color: var(--cor-tabuleiro);
-  padding: 15px;
+  padding: 10px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .player-area {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-height: auto;
 }
+
 .player-info {
   text-align: center;
-  min-width: 150px;
+  min-width: 120px;
+  flex-shrink: 0;
 }
+
+.player-info h2 {
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+}
+
 .stats p {
-  margin: 4px 0;
-  font-size: 0.9em;
+  margin: 2px 0;
+  font-size: 0.85em;
 }
+
+/* Mãos de cartas otimizadas */
 .hand {
   display: flex;
-  gap: 1vw;
+  gap: 0.5vw;
   justify-content: center;
   align-items: center;
-  min-height: 140px;
+  flex-wrap: wrap;
   flex-grow: 1;
+  min-height: 80px;
+  padding: 5px;
 }
 
+/* Cartas responsivas */
 .card {
-  width: 7.5vw;
-  max-width: 100px;
-  height: 10.5vw;
-  max-height: 140px;
-
-  border-radius: 8px;
+  width: clamp(50px, 8vw, 80px);
+  height: clamp(70px, 11.2vw, 112px);
+  border-radius: 6px;
   border: 2px solid var(--cor-texto);
   display: flex;
   flex-direction: column;
@@ -98,25 +117,32 @@ header {
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   user-select: none;
-  padding: 0.5vw;
+  padding: 4px;
   box-sizing: border-box;
+  flex-shrink: 0;
 }
+
 .card-icon {
-  font-size: 3vw;
-  filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.2));
+  font-size: clamp(20px, 4vw, 32px);
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.2));
 }
+
 .card-name {
-  font-size: 0.8vw;
+  font-size: clamp(8px, 1.2vw, 12px);
   text-align: center;
+  line-height: 1.1;
 }
 
 .card.selected {
-  transform: translateY(-15px);
-  box-shadow: 0 0 15px gold;
+  transform: translateY(-10px);
+  box-shadow: 0 0 10px gold;
 }
+
 .card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
 }
+
+/* Cores das cartas */
 .card[data-tipo="DIAMANTE"] {
   background-color: #b9f2ff;
 }
@@ -144,46 +170,8 @@ header {
   background-color: var(--cor-carta-verso);
   color: white;
 }
-#central-area {
-  display: flex;
-  gap: 20px;
-}
-#mercado {
-  flex-grow: 1;
-}
-#action-panel {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: var(--cor-tabuleiro);
-  padding: 15px;
-  border-radius: 8px;
-}
-#notification-area {
-  font-size: 1.1em;
-  font-weight: 500;
-  flex-grow: 1;
-}
-#action-buttons button {
-  padding: 10px 20px;
-  font-size: 1em;
-  font-family: "Merriweather", serif;
-  background-color: var(--cor-destaque);
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-left: 10px;
-  transition: background-color 0.2s;
-}
-#action-buttons button:hover {
-  background-color: #a0522d;
-}
-#action-buttons button:disabled {
-  background-color: #999;
-  cursor: not-allowed;
-}
 
+/* Stack de camelos */
 .camel-stack {
   position: relative;
   display: flex;
@@ -192,21 +180,56 @@ header {
   cursor: pointer;
   transition: transform 0.2s ease;
 }
+
 .camel-stack:hover {
   transform: translateY(-5px);
 }
+
 .camel-stack .card {
-  margin-left: -6.5vw;
+  position: absolute;
+  top: 0;
+  left: 0;
   box-shadow: -1px 1px 3px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
 }
+
 .camel-stack .card:first-child {
-  margin-left: 0;
+  position: relative;
   z-index: 5;
 }
+
+.camel-stack .card:nth-child(2) {
+  top: 1px;
+  left: 1px;
+  z-index: 4;
+}
+
+.camel-stack .card:nth-child(3) {
+  top: 2px;
+  left: 2px;
+  z-index: 3;
+}
+
+.camel-stack .card:nth-child(4) {
+  top: 3px;
+  left: 3px;
+  z-index: 2;
+}
+
+.camel-stack .card:nth-child(5) {
+  top: 4px;
+  left: 4px;
+  z-index: 1;
+}
+
 .camel-stack .card:not(:first-child) > * {
   visibility: hidden;
 }
+
+.camel-stack.selected {
+  transform: translateY(-15px);
+}
+
 .camel-stack::after {
   content: attr(data-count);
   position: absolute;
@@ -227,227 +250,87 @@ header {
   z-index: 10;
 }
 
-#trade-indicator {
-  font-style: italic;
-  font-weight: 700;
-  color: var(--cor-destaque);
-  margin-top: 5px;
-  min-height: 1.2em;
-}
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-.modal-content {
-  background-color: var(--cor-fundo);
-  padding: 30px;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  border: 3px solid var(--cor-destaque);
-}
-.modal-content h2 {
-  margin-bottom: 15px;
-  font-size: 2em;
-}
-.modal-buttons {
-  margin-top: 25px;
+/* Área central */
+#central-area {
   display: flex;
   gap: 15px;
 }
-.modal-buttons button {
-  padding: 12px 25px;
-  font-size: 1.1em;
+
+#mercado {
+  flex-grow: 1;
 }
-#info-valores h3 {
+
+#mercado h3 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
   text-align: center;
-  margin-bottom: 10px;
 }
-#tabela-valores {
+
+/* Painel de ações compacto */
+#action-panel {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  gap: 15px;
+  background-color: var(--cor-tabuleiro);
+  padding: 10px;
+  border-radius: 8px;
+  gap: 10px;
   flex-wrap: wrap;
 }
-.valor-item {
+
+#notification-area {
+  font-size: 1em;
+  font-weight: 500;
+  flex-grow: 1;
+  min-width: 200px;
+}
+
+#action-buttons {
   display: flex;
-  align-items: center;
   gap: 8px;
-  background-color: var(--cor-fundo);
-  padding: 5px 10px;
-  border-radius: 20px;
-  border: 2px solid var(--cor-destaque);
-  font-weight: 700;
+  flex-wrap: wrap;
 }
-.valor-item-icon {
-  font-size: 1.5em;
-}
-.valor-item-ponto {
-  font-size: 1.2em;
-  font-family: "Merriweather", serif;
-}
-#btn-desistir {
-  background-color: #b22222;
-  padding: 10px 15px;
+
+#action-buttons button {
+  padding: 8px 15px;
   font-size: 0.9em;
   font-family: "Merriweather", serif;
-  color: #fff;
+  background-color: var(--cor-destaque);
+  color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.2s;
-}
-#btn-desistir:hover {
-  background-color: #8b0000;
-}
-.vencedor-texto {
-  font-size: 1.4em;
-  font-weight: 700;
-  color: var(--cor-destaque);
-  margin-bottom: 20px;
-}
-#detalhes-rodadas {
-  margin-top: 15px;
-  margin-bottom: 25px;
-  width: 100%;
-  border-collapse: collapse;
-  display: table;
-}
-.rodada-resumo {
-  display: table-row;
-  font-size: 1.1em;
-}
-.rodada-resumo:nth-child(odd) {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-.rodada-resumo > div {
-  display: table-cell;
-  padding: 8px 12px;
-  text-align: center;
-  border-bottom: 1px solid #c8a780;
-}
-.rodada-header {
-  display: table-header-group;
-  font-weight: 700;
-  color: var(--cor-destaque);
-  font-family: "Merriweather", serif;
+  white-space: nowrap;
 }
 
-.header-title {
-  display: flex;
-  align-items: center;
-  gap: 15px;
+#action-buttons button:hover {
+  background-color: #a0522d;
 }
 
-.info-button {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: 2px solid var(--cor-destaque);
-  background-color: var(--cor-fundo);
-  color: var(--cor-destaque);
-  font-size: 1.2em;
-  font-weight: bold;
-  font-family: "Merriweather", serif;
-  cursor: pointer;
-  transition: all 0.2s ease;
+#action-buttons button:disabled {
+  background-color: #999;
+  cursor: not-allowed;
 }
 
-.info-button:hover {
-  background-color: var(--cor-destaque);
-  color: var(--cor-fundo);
-}
-
-.regras-texto {
-  text-align: left;
-  max-height: 400px;
-  overflow-y: auto;
-  padding-right: 15px;
-}
-
-.regras-texto h4 {
-  margin-top: 15px;
-  margin-bottom: 5px;
-}
-
-.regras-texto ul {
-  padding-left: 20px;
-}
-
-@media (max-width: 900px) {
-  body {
-    padding: 5px;
-    zoom: unset;
-  }
-
-  #game-container {
-    width: 98%;
-    min-width: 0;
-  }
-
-  .hand {
-    flex-wrap: wrap;
-    gap: 5px;
-  }
-
-  .card {
-    width: 18vw;
-    height: 25.2vw;
-    max-width: 80px;
-    max-height: 112px;
-  }
-  .card-icon {
-    font-size: 8vw;
-  }
-  .card-name {
-    font-size: 2.5vw;
-  }
-
-  #central-area,
-  .player-area {
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  #action-panel {
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  #action-buttons {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    gap: 10px;
-  }
-  #action-buttons button {
-    width: 100%;
-    margin-left: 0;
-  }
-}
-
+/* Indicador de troca */
 #trade-indicator {
   display: flex;
   align-items: center;
   gap: 5px;
   flex-wrap: wrap;
-  margin-top: 5px;
+  margin-top: 3px;
+  font-style: italic;
+  font-weight: 700;
+  color: var(--cor-destaque);
+  font-size: 0.85em;
 }
 
 .trade-item {
   background-color: var(--cor-fundo);
-  padding: 5px 10px;
-  border-radius: 15px;
-  font-size: 0.9em;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8em;
   font-weight: 500;
 }
 
@@ -461,50 +344,436 @@ header {
   background-color: #eaddc5;
 }
 
-@media (max-width: 900px) {
+/* Valores de referência */
+#info-valores h3 {
+  text-align: center;
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+#tabela-valores {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.valor-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: var(--cor-fundo);
+  padding: 3px 8px;
+  border-radius: 15px;
+  border: 2px solid var(--cor-destaque);
+  font-weight: 700;
+  font-size: 0.8em;
+}
+
+.valor-item-icon {
+  font-size: 1.2em;
+}
+
+.valor-item-ponto {
+  font-size: 1em;
+  font-family: "Merriweather", serif;
+}
+
+/* Botão desistir */
+#btn-desistir {
+  background-color: #b22222;
+  padding: 8px 12px;
+  font-size: 0.8em;
+  font-family: "Merriweather", serif;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#btn-desistir:hover {
+  background-color: #8b0000;
+}
+
+/* Botão de informações */
+.info-button {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 2px solid var(--cor-destaque);
+  background-color: var(--cor-fundo);
+  color: var(--cor-destaque);
+  font-size: 1em;
+  font-weight: bold;
+  font-family: "Merriweather", serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.info-button:hover {
+  background-color: var(--cor-destaque);
+  color: var(--cor-fundo);
+}
+
+/* Modais */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.modal-content {
+  background-color: var(--cor-fundo);
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  border: 3px solid var(--cor-destaque);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-content h2 {
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+}
+
+.modal-buttons {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.modal-buttons button {
+  padding: 10px 20px;
+  font-size: 1em;
+  font-family: "Merriweather", serif;
+  background-color: var(--cor-destaque);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Regras */
+.regras-texto {
+  text-align: left;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.regras-texto h4 {
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+.regras-texto ul {
+  padding-left: 20px;
+}
+
+/* Resumo final */
+.vencedor-texto {
+  font-size: 1.2em;
+  font-weight: 700;
+  color: var(--cor-destaque);
+  margin-bottom: 15px;
+}
+
+#detalhes-rodadas {
+  margin: 15px 0;
+  width: 100%;
+  border-collapse: collapse;
+  display: table;
+}
+
+.rodada-resumo {
+  display: table-row;
+  font-size: 0.9em;
+}
+
+.rodada-resumo:nth-child(odd) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.rodada-resumo > div {
+  display: table-cell;
+  padding: 6px 8px;
+  text-align: center;
+  border-bottom: 1px solid #c8a780;
+}
+
+.rodada-header {
+  display: table-header-group;
+  font-weight: 700;
+  color: var(--cor-destaque);
+  font-family: "Merriweather", serif;
+}
+
+/* RESPONSIVIDADE MÓVEL */
+@media (max-width: 768px) {
   body {
     padding: 5px;
-    zoom: unset;
   }
 
   #game-container {
-    width: 98%;
-    min-width: 0;
+    gap: 5px;
+    min-height: calc(100vh - 10px);
   }
 
+  /* Header mobile */
+  header {
+    padding: 6px 10px;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  header h1 {
+    font-size: 1.3rem;
+  }
+
+  #game-info {
+    font-size: 0.8em;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  #header-actions {
+    order: -1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Player areas mobile */
+  .player-area {
+    padding: 8px;
+  }
+
+  .player-info {
+    min-width: 100px;
+  }
+
+  .player-info h2 {
+    font-size: 1rem;
+  }
+
+  .stats p {
+    font-size: 0.75em;
+  }
+
+  /* Mãos mobile */
   .hand {
-    flex-wrap: wrap;
+    gap: 3px;
+    min-height: 70px;
+    padding: 3px;
+  }
+
+  /* Cartas menores no mobile */
+  .card {
+    width: clamp(45px, 15vw, 60px);
+    height: clamp(63px, 21vw, 84px);
+    padding: 2px;
+  }
+
+  .card-icon {
+    font-size: clamp(16px, 6vw, 24px);
+  }
+
+  .card-name {
+    font-size: clamp(6px, 2vw, 10px);
+  }
+
+  .card.selected {
+    transform: translateY(-8px);
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Stack de camelos mobile */
+  .camel-stack {
+    margin-left: 20px;
+  }
+
+  .camel-stack .card:nth-child(2) {
+    top: 2px;
+    left: 2px;
+  }
+
+  .camel-stack .card:nth-child(3) {
+    top: 4px;
+    left: 4px;
+  }
+
+  .camel-stack .card:nth-child(4) {
+    top: 6px;
+    left: 6px;
+  }
+
+  .camel-stack .card:nth-child(5) {
+    top: 8px;
+    left: 8px;
+  }
+
+  .camel-stack::after {
+    width: 25px;
+    height: 25px;
+    font-size: 1em;
+    bottom: -5px;
+    right: -12px;
+  }
+
+  /* Central area mobile */
+  #central-area {
+    padding: 8px;
+    gap: 10px;
+  }
+
+  #mercado h3 {
+    font-size: 1rem;
+    margin-bottom: 5px;
+  }
+
+  /* Info valores mobile */
+  #info-valores {
+    padding: 8px;
+  }
+
+  #info-valores h3 {
+    font-size: 0.9rem;
+  }
+
+  #tabela-valores {
     gap: 5px;
   }
 
-  .card {
-    width: 18vw;
-    height: 25.2vw;
-    max-width: 80px;
-    max-height: 112px;
-  }
-  .card-icon {
-    font-size: 8vw;
-  }
-  .card-name {
-    font-size: 2.5vw;
+  .valor-item {
+    padding: 2px 6px;
+    font-size: 0.7em;
+    gap: 3px;
   }
 
-  #central-area,
-  .player-area,
+  .valor-item-icon {
+    font-size: 1em;
+  }
+
+  /* Action panel mobile */
   #action-panel {
+    padding: 8px;
     flex-direction: column;
-    gap: 20px;
+    gap: 8px;
+  }
+
+  #notification-area {
+    font-size: 0.9em;
+    text-align: center;
+    min-width: auto;
   }
 
   #action-buttons {
-    display: flex;
-    flex-direction: column;
     width: 100%;
-    gap: 10px;
+    justify-content: center;
   }
+
   #action-buttons button {
-    width: 100%;
-    margin-left: 0;
+    flex: 1;
+    min-width: 80px;
+    padding: 10px 8px;
+    font-size: 0.8em;
+  }
+
+  /* Trade indicator mobile */
+  #trade-indicator {
+    font-size: 0.75em;
+    justify-content: center;
+  }
+
+  .trade-item {
+    font-size: 0.7em;
+    padding: 2px 6px;
+  }
+
+  /* Modal mobile */
+  .modal-overlay {
+    padding: 10px;
+  }
+
+  .modal-content {
+    padding: 15px;
+    max-width: 95vw;
+  }
+
+  .modal-content h2 {
+    font-size: 1.3rem;
+  }
+
+  .modal-buttons button {
+    padding: 8px 15px;
+    font-size: 0.9em;
+    flex: 1;
+    min-width: 80px;
+  }
+
+  /* Regras mobile */
+  .regras-texto {
+    font-size: 0.85em;
+    max-height: 50vh;
+  }
+
+  /* Resumo final mobile */
+  .vencedor-texto {
+    font-size: 1.1em;
+  }
+
+  .rodada-resumo {
+    font-size: 0.8em;
+  }
+
+  .rodada-resumo > div {
+    padding: 4px 6px;
+  }
+}
+
+@media (max-width: 400px) {
+  .card {
+    width: clamp(40px, 18vw, 55px);
+    height: clamp(56px, 25.2vw, 77px);
+  }
+
+  .card-icon {
+    font-size: clamp(14px, 8vw, 20px);
+  }
+
+  .card-name {
+    font-size: clamp(5px, 2.5vw, 8px);
+  }
+
+  #action-buttons button {
+    font-size: 0.75em;
+    padding: 8px 6px;
+  }
+
+  #game-info {
+    font-size: 0.7em;
+  }
+
+  .stats p {
+    font-size: 0.7em;
   }
 }
