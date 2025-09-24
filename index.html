@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jaipur Online</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="modal-dificuldade" class="modal-overlay">
+      <div class="modal-content">
+        <h2>Escolha a Dificuldade</h2>
+        <p>A dificuldade define o quão "inteligente" o oponente será.</p>
+        <div class="modal-buttons">
+          <button id="btn-facil" data-depth="2">Fácil</button>
+          <button id="btn-medio" data-depth="4">Médio</button>
+          <button id="btn-dificil" data-depth="5">Difícil</button>
+        </div>
+      </div>
+    </div>
+    <div id="game-container">
+      <header>
+        <h1>Jaipur</h1>
+        <div id="game-info">
+          <p>Placar (MD3): <span id="placar-md3">0 a 0</span></p>
+          <p>Dificuldade: <span id="dificuldade-jogo">-</span></p>
+          <p>Turno: <span id="turno-atual">1</span></p>
+          <p>Cartas no Baralho: <span id="cartas-baralho">55</span></p>
+        </div>
+        <div id="header-actions">
+          <button id="btn-desistir">Desistir da Rodada</button>
+        </div>
+      </header>
+
+      <div id="opponent-area" class="player-area">
+        <div class="player-info">
+          <h2 id="j2-nome">Oponente</h2>
+          <div class="stats">
+            <p>Fichas: <span id="j2-fichas">0</span></p>
+            <p>Camelos: <span id="j2-camelos">0</span></p>
+            <p>Selos: <span id="j2-selos">0</span></p>
+          </div>
+        </div>
+        <div id="j2-mao" class="hand"></div>
+      </div>
+
+      <div id="central-area">
+        <div id="mercado" class="card-area">
+          <h3>Mercado</h3>
+          <div id="mercado-cartas" class="hand"></div>
+        </div>
+      </div>
+
+      <div id="player-area" class="player-area">
+        <div id="j1-mao" class="hand"></div>
+        <div class="player-info">
+          <h2 id="j1-nome">Você</h2>
+          <div class="stats">
+            <p>Fichas: <span id="j1-fichas">0</span></p>
+            <p>Camelos: <span id="j1-camelos">0</span></p>
+            <p>Selos: <span id="j1-selos">0</span></p>
+          </div>
+        </div>
+      </div>
+
+      <div id="info-valores" class="card-area">
+        <h3>Valores de Referência</h3>
+        <div id="tabela-valores"></div>
+      </div>
+
+      <div id="action-panel">
+        <div id="notification-area">
+          <p id="notification-text">Bem-vindo ao Jaipur! É a sua vez.</p>
+          <p id="trade-indicator"></p>
+        </div>
+        <div id="action-buttons">
+          <button id="btn-vender">Vender</button>
+          <button id="btn-trocar">Trocar</button>
+          <button id="btn-pegar-camelos">Pegar Camelos</button>
+        </div>
+      </div>
+    </div>
+
+
+<div id="modal-fim-de-jogo" class="modal-overlay" style="display: none;">
+      <div class="modal-content">
+        <h2>Fim de Jogo!</h2>
+        <p id="vencedor-final" class="vencedor-texto"></p>
+        <h3>Resumo das Rodadas</h3>
+        <div id="detalhes-rodadas">
+          </div>
+        <div class="modal-buttons">
+          <button id="btn-jogar-novamente">Jogar Novamente</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="game.js"></script>
+    <script src="ai.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
+</html>
