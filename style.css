@@ -14,6 +14,7 @@ body {
   align-items: flex-start;
   margin: 0;
   padding: 20px;
+  box-sizing: border-box;
   min-height: 100vh;
 }
 h1,
@@ -24,16 +25,21 @@ h3 {
   margin: 0;
   padding: 0;
 }
+
 #game-container {
-  width: 1200px;
+  width: 95%;
+  max-width: 1200px;
+  min-width: 600px;
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
+
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
   padding: 10px 20px;
   background-color: var(--cor-tabuleiro);
   border-radius: 8px;
@@ -43,9 +49,11 @@ header {
   display: flex;
   gap: 20px;
   font-size: 1.1em;
+  flex-wrap: wrap;
 }
 .player-area,
-#central-area {
+#central-area,
+#info-valores {
   background-color: var(--cor-tabuleiro);
   padding: 15px;
   border-radius: 8px;
@@ -66,14 +74,19 @@ header {
 }
 .hand {
   display: flex;
-  gap: 10px;
+  gap: 1vw;
   justify-content: center;
+  align-items: center;
   min-height: 140px;
   flex-grow: 1;
 }
+
 .card {
-  width: 100px;
-  height: 140px;
+  width: 7.5vw;
+  max-width: 100px;
+  height: 10.5vw;
+  max-height: 140px;
+
   border-radius: 8px;
   border: 2px solid var(--cor-texto);
   display: flex;
@@ -84,17 +97,20 @@ header {
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   user-select: none;
-  padding: 10px 5px;
+  padding: 0.5vw;
   box-sizing: border-box;
 }
 .card-icon {
-  font-size: 3em;
+  font-size: 3vw;
+  max-font-size: 3em;
   filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.2));
 }
 .card-name {
-  font-size: 0.9em;
+  font-size: 0.8vw;
+  max-font-size: 0.9em;
   text-align: center;
 }
+
 .card.selected {
   transform: translateY(-15px);
   box-shadow: 0 0 15px gold;
@@ -136,30 +152,6 @@ header {
 #mercado {
   flex-grow: 1;
 }
-#fichas-area {
-  min-width: 300px;
-}
-#fichas-mercadorias,
-#fichas-bonus {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-}
-.ficha {
-  width: 50px;
-  height: 50px;
-  font-size: 1.2em;
-  border-radius: 50%;
-  cursor: default;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 2px solid var(--cor-texto);
-}
-.ficha:hover {
-  transform: none;
-}
 #action-panel {
   display: flex;
   justify-content: space-between;
@@ -171,6 +163,7 @@ header {
 #notification-area {
   font-size: 1.1em;
   font-weight: 500;
+  flex-grow: 1;
 }
 #action-buttons button {
   padding: 10px 20px;
@@ -199,34 +192,34 @@ header {
   margin-left: 20px;
   cursor: pointer;
 }
-
 .camel-stack .card {
-  margin-left: -85px;
+  margin-left: -6vw; /* Margem relativa */
   box-shadow: -1px 1px 3px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s ease;
 }
-
 .camel-stack .card:first-child {
   margin-left: 0;
+  z-index: 5;
 }
-
-.camel-stack:hover .card:last-child {
-  transform: translateY(-5px);
+.camel-stack:hover .card:not(:first-child) {
+  margin-left: -4.5vw;
+  transform: translateY(-10px);
 }
-
-.camel-stack .card:not(:last-child) > * {
+.camel-stack:hover .card:first-child {
+  transform: translateY(-10px);
+}
+.camel-stack .card:not(:first-child) > * {
   visibility: hidden;
 }
-
 .camel-stack::after {
   content: attr(data-count);
   position: absolute;
   bottom: -5px;
   right: -15px;
   background-color: var(--cor-destaque);
-  color: white;
+  color: #fff;
   font-family: "Merriweather", serif;
-  font-weight: bold;
+  font-weight: 700;
   font-size: 1.2em;
   width: 30px;
   height: 30px;
@@ -240,7 +233,7 @@ header {
 
 #trade-indicator {
   font-style: italic;
-  font-weight: bold;
+  font-weight: 700;
   color: var(--cor-destaque);
   margin-top: 5px;
   min-height: 1.2em;
@@ -278,19 +271,10 @@ header {
   padding: 12px 25px;
   font-size: 1.1em;
 }
-
-#info-valores {
-  background-color: var(--cor-tabuleiro);
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
 #info-valores h3 {
   text-align: center;
   margin-bottom: 10px;
 }
-
 #tabela-valores {
   display: flex;
   justify-content: center;
@@ -298,7 +282,6 @@ header {
   gap: 15px;
   flex-wrap: wrap;
 }
-
 .valor-item {
   display: flex;
   align-items: center;
@@ -307,41 +290,35 @@ header {
   padding: 5px 10px;
   border-radius: 20px;
   border: 2px solid var(--cor-destaque);
-  font-weight: bold;
+  font-weight: 700;
 }
-
 .valor-item-icon {
   font-size: 1.5em;
 }
-
 .valor-item-ponto {
   font-size: 1.2em;
   font-family: "Merriweather", serif;
 }
-
 #btn-desistir {
   background-color: #b22222;
   padding: 10px 15px;
   font-size: 0.9em;
   font-family: "Merriweather", serif;
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.2s;
 }
-
 #btn-desistir:hover {
   background-color: #8b0000;
 }
-
 .vencedor-texto {
   font-size: 1.4em;
-  font-weight: bold;
+  font-weight: 700;
   color: var(--cor-destaque);
   margin-bottom: 20px;
 }
-
 #detalhes-rodadas {
   margin-top: 15px;
   margin-bottom: 25px;
@@ -349,26 +326,52 @@ header {
   border-collapse: collapse;
   display: table;
 }
-
 .rodada-resumo {
   display: table-row;
   font-size: 1.1em;
 }
-
 .rodada-resumo:nth-child(odd) {
   background-color: rgba(0, 0, 0, 0.05);
 }
-
 .rodada-resumo > div {
   display: table-cell;
   padding: 8px 12px;
   text-align: center;
   border-bottom: 1px solid #c8a780;
 }
-
 .rodada-header {
   display: table-header-group;
-  font-weight: bold;
+  font-weight: 700;
   color: var(--cor-destaque);
   font-family: "Merriweather", serif;
+}
+
+@media (max-width: 900px) {
+  body {
+    padding: 5px;
+  }
+  .hand {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .card {
+    width: 12vw;
+    height: 16.8vw;
+  }
+  .card-icon {
+    font-size: 4vw;
+  }
+  .card-name {
+    font-size: 1.2vw;
+  }
+
+  #central-area,
+  .player-area {
+    flex-direction: column;
+    gap: 20px;
+  }
+  #action-panel {
+    flex-direction: column;
+    gap: 15px;
+  }
 }
