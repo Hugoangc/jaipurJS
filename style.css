@@ -143,35 +143,36 @@ header h1 {
 }
 
 /* Cores das cartas */
-.card[data-tipo="DIAMANTE"] {
-  background-color: #b9f2ff;
+.card[data-tipo="QUEIJO"] {
+  background-color: #f8e473;
 }
 .card[data-tipo="OURO"] {
   background-color: #ffd700;
 }
-.card[data-tipo="PRATA"] {
-  background-color: #c0c0c0;
+.card[data-tipo="CAFE"] {
+  background-color: #6f4e37;
+  color: white;
 }
-.card[data-tipo="SEDA"] {
-  background-color: #9370db;
+.card[data-tipo="LEITE"] {
+  background-color: #e0a96d;
 }
-.card[data-tipo="ESPECIA"] {
-  background-color: #228b22;
+.card[data-tipo="DOCE_DE_LEITE"] {
+  background-color: #c68e4c;
   color: white;
 }
 .card[data-tipo="COURO"] {
   background-color: #d2691e;
   color: white;
 }
-.card[data-tipo="CAMELO"] {
-  background-color: #f5deb3;
+.card[data-tipo="VACA"] {
+  background-color: #f5f5dc;
 }
 .card.verso {
   background-color: var(--cor-carta-verso);
   color: white;
 }
 
-/* Stack de camelos */
+/* Stack de vacas */
 .camel-stack {
   position: relative;
   display: flex;
@@ -606,7 +607,7 @@ header h1 {
     transform: translateY(-2px);
   }
 
-  /* Stack de camelos mobile */
+  /* Stack de vacas mobile */
   .camel-stack {
     margin-left: 20px;
   }

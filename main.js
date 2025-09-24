@@ -1,26 +1,26 @@
 let estadoAtual, PROFUNDIDADE_IA;
 let NOME_DIFICULDADE_IA = "";
-let selecao = { mao: [], mercado: [], cameloCount: 0 };
+let selecao = { mao: [], mercado: [], vacaCount: 0 };
 let historicoRodadas = [];
 let jogador1 = new Jogador("Você");
 let jogador2 = new Jogador("Oponente IA");
 
 const CARTA_VISUALS = {
-  DIAMANTE: { icon: "💎", name: "Diamante" },
-  OURO: { icon: "🥇", name: "Ouro" },
-  PRATA: { icon: "🥈", name: "Prata" },
-  SEDA: { icon: "🧣", name: "Seda" },
-  ESPECIA: { icon: "🌶️", name: "Especiaria" },
+  QUEIJO: { icon: "🧀", name: "Queijo" },
+  OURO: { icon: "💰", name: "Ouro" },
+  CAFE: { icon: "🫘", name: "Café" },
+  LEITE: { icon: "🍶", name: "Leite" },
+  DOCE_DE_LEITE: { icon: "🍮", name: "Doce de Leite" },
   COURO: { icon: "👜", name: "Couro" },
-  CAMELO: { icon: "🐫", name: "Camelo" },
-  VERSO: { icon: " J ", name: "Jaipur" },
+  VACA: { icon: "🐄", name: "Vaca" },
+  VERSO: { icon: " T ", name: "Tropeiro" },
 };
 const VALORES_BASE = {
-  DIAMANTE: 7,
+  QUEIJO: 7,
   OURO: 6,
-  PRATA: 5,
-  SEDA: 3,
-  ESPECIA: 3,
+  CAFE: 5,
+  LEITE: 3,
+  DOCE_DE_LEITE: 3,
   COURO: 1,
 };
 
@@ -89,10 +89,10 @@ function renderizarTabelaFixa() {
   }
 }
 
-function onCamelStackRightClick(event) {
+function onVacaStackRightClick(event) {
   event.preventDefault();
-  if (selecao.cameloCount > 0) {
-    selecao.cameloCount--;
+  if (selecao.vacaCount > 0) {
+    selecao.vacaCount--;
     atualizarIndicadorTroca();
   }
 }
@@ -105,44 +105,44 @@ function renderizar() {
 
   j1NomeEl.textContent = j1.nome;
   j1FichasEl.textContent = j1.fichas_coletadas.length;
-  j1CamelosEl.textContent = j1.camelo_count();
+  j1CamelosEl.textContent = j1.vaca_count();
   j1SelosEl.textContent = j1.selos_excelencia;
   j1MaoEl.innerHTML = "";
   j1.mao.forEach((carta, i) =>
     j1MaoEl.appendChild(criarElementoCarta(carta, i, "mao"))
   );
 
-  if (j1.camelo_count() > 0) {
+  if (j1.vaca_count() > 0) {
     const stack = document.createElement("div");
     stack.className = "camel-stack";
-    stack.dataset.count = j1.camelo_count();
+    stack.dataset.count = j1.vaca_count();
 
-    for (let i = 0; i < j1.camelo_count(); i++) {
+    for (let i = 0; i < j1.vaca_count(); i++) {
       stack.appendChild(
-        criarElementoCarta(new Carta(TipoCarta.CAMELO), i, "camelo")
+        criarElementoCarta(new Carta(TipoCarta.VACA), i, "vaca")
       );
     }
 
-    stack.addEventListener("click", onCamelStackClick);
-    stack.addEventListener("contextmenu", onCamelStackRightClick);
+    stack.addEventListener("click", onVacaStackClick);
+    stack.addEventListener("contextmenu", onVacaStackRightClick);
 
     j1MaoEl.appendChild(stack);
   }
 
   j2NomeEl.textContent = j2.nome;
   j2FichasEl.textContent = j2.fichas_coletadas.length;
-  j2CamelosEl.textContent = j2.camelo_count();
+  j2CamelosEl.textContent = j2.vaca_count();
   j2SelosEl.textContent = j2.selos_excelencia;
   j2MaoEl.innerHTML = "";
   for (let i = 0; i < j2.mao.length; i++)
     j2MaoEl.appendChild(criarElementoCarta(new Carta("VERSO"), i, "oponente"));
-  if (j2.camelo_count() > 0) {
+  if (j2.vaca_count() > 0) {
     const stack = document.createElement("div");
     stack.className = "camel-stack";
-    stack.dataset.count = j2.camelo_count();
-    for (let i = 0; i < j2.camelo_count(); i++)
+    stack.dataset.count = j2.vaca_count();
+    for (let i = 0; i < j2.vaca_count(); i++)
       stack.appendChild(
-        criarElementoCarta(new Carta(TipoCarta.CAMELO), i, "oponente-camelo")
+        criarElementoCarta(new Carta(TipoCarta.VACA), i, "oponente-vaca")
       );
     j2MaoEl.appendChild(stack);
   }
@@ -160,7 +160,7 @@ function renderizar() {
 document.addEventListener("DOMContentLoaded", () => {
   btnVender.addEventListener("click", onVenderClick);
   btnTrocar.addEventListener("click", onTrocarClick);
-  btnPegarCamelos.addEventListener("click", onPegarCamelosClick);
+  btnPegarCamelos.addEventListener("click", onPegarVacasClick);
   btnDesistir.addEventListener("click", onDesistirClick);
 
   btnJogarNovamente.addEventListener("click", () => location.reload());
@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 function limparSelecao() {
-  selecao = { mao: [], mercado: [], cameloCount: 0 };
+  selecao = { mao: [], mercado: [], vacaCount: 0 };
   document
     .querySelectorAll(".card.selected")
     .forEach((c) => c.classList.remove("selected"));
@@ -205,17 +205,17 @@ function onCartaClick(cartaEl) {
   if (
     origem === "mercado" &&
     selecao.mao.length === 0 &&
-    selecao.cameloCount === 0 &&
+    selecao.vacaCount === 0 &&
     selecao.mercado.length === 0
   ) {
     const cartaComprada = estadoAtual.mercado.cartas[indice];
-    if (cartaComprada.tipo === TipoCarta.CAMELO)
-      return notificar("Para pegar camelos, use o botão 'Pegar Camelos'.");
+    if (cartaComprada.tipo === TipoCarta.VACA)
+      return notificar("Para pegar vacas, use o botão 'Pegar Vacas'.");
     if (j1.mao.length >= 7)
       return notificar("Sua mão está cheia (limite de 7 cartas).");
     j1.pegar_carta(estadoAtual.mercado.cartas.splice(indice, 1)[0]);
     estadoAtual.mercado.repor(estadoAtual.baralho);
-    proximoTurno(`Você comprou ${cartaComprada.tipo}.`);
+    proximoTurno(`Você pegou ${cartaComprada.tipo}.`);
     return;
   }
 
@@ -229,42 +229,42 @@ function onCartaClick(cartaEl) {
   }
   atualizarIndicadorTroca();
 }
-function onCamelStackClick(event) {
+function onVacaStackClick(event) {
   event.preventDefault();
-  const totalCamelos = estadoAtual.jogador1.camelo_count();
-  if (totalCamelos === 0) {
+  const totalVacas = estadoAtual.jogador1.vaca_count();
+  if (totalVacas === 0) {
     return;
   }
-  if (selecao.cameloCount < totalCamelos) {
-    selecao.cameloCount++;
+  if (selecao.vacaCount < totalVacas) {
+    selecao.vacaCount++;
   } else {
-    selecao.cameloCount = 0;
+    selecao.vacaCount = 0;
   }
   atualizarIndicadorTroca();
 }
 
-function onCamelStackRightClick(event) {
+function onVacaStackRightClick(event) {
   event.preventDefault();
-  if (selecao.cameloCount > 0) {
-    selecao.cameloCount--;
+  if (selecao.vacaCount > 0) {
+    selecao.vacaCount--;
     atualizarIndicadorTroca();
   }
 }
 function atualizarIndicadorTroca() {
-  const { mao, mercado, cameloCount } = selecao;
+  const { mao, mercado, vacaCount } = selecao;
 
   tradeIndicatorEl.innerHTML = "";
 
-  if (mao.length === 0 && mercado.length === 0 && cameloCount === 0) {
+  if (mao.length === 0 && mercado.length === 0 && vacaCount === 0) {
     return;
   }
 
   let texto = "<span>Seleção para troca: </span>";
   const partes = [];
 
-  if (cameloCount > 0) {
-    partes.push(`<span id="camel-trade-indicator" class="trade-item" title="Clique para remover um camelo">
-                    🐫 ${cameloCount} Camelo(s)
+  if (vacaCount > 0) {
+    partes.push(`<span id="camel-trade-indicator" class="trade-item" title="Clique para remover uma vaca">
+                    🐄 ${vacaCount} Vaca(s)
                  </span>`);
   }
   if (mao.length > 0)
@@ -279,30 +279,30 @@ function atualizarIndicadorTroca() {
   const camelIndicator = get("camel-trade-indicator");
   if (camelIndicator) {
     camelIndicator.addEventListener("click", () => {
-      if (selecao.cameloCount > 0) {
-        selecao.cameloCount--;
+      if (selecao.vacaCount > 0) {
+        selecao.vacaCount--;
         atualizarIndicadorTroca();
       }
     });
   }
 }
 
-function onPegarCamelosClick() {
+function onPegarVacasClick() {
   const j1 = estadoAtual.jogador1;
-  let camelosNoMercado = 0;
+  let vacasNoMercado = 0;
   const novasCartasMercado = estadoAtual.mercado.cartas.filter((carta) => {
-    if (carta.tipo === TipoCarta.CAMELO) {
+    if (carta.tipo === TipoCarta.VACA) {
       j1.pegar_carta(carta);
-      camelosNoMercado++;
+      vacasNoMercado++;
       return false;
     }
     return true;
   });
-  if (camelosNoMercado > 0) {
+  if (vacasNoMercado > 0) {
     estadoAtual.mercado.cartas = novasCartasMercado;
     estadoAtual.mercado.repor(estadoAtual.baralho);
-    proximoTurno(`Você pegou ${camelosNoMercado} camelo(s).`);
-  } else notificar("Não há camelos no mercado.");
+    proximoTurno(`Você pegou ${vacasNoMercado} vaca(s).`);
+  } else notificar("Não há vacas no mercado.");
 }
 
 function onVenderClick() {
@@ -324,7 +324,7 @@ function onVenderClick() {
     );
   } else {
     notificar(
-      "Venda inválida! (Lembre-se: bens de luxo 💎🥇🥈 exigem no mínimo 2 cartas)."
+      "Venda inválida! (Lembre-se: produtos de luxo 💰💎🧀 exigem no mínimo 2 cartas)."
     );
     limparSelecao();
   }
@@ -332,7 +332,7 @@ function onVenderClick() {
 
 function onTrocarClick() {
   const j1 = estadoAtual.jogador1;
-  const cartasDoJogadorCount = selecao.mao.length + selecao.cameloCount;
+  const cartasDoJogadorCount = selecao.mao.length + selecao.vacaCount;
   const cartasMercadoSel = selecao.mercado.map(
     (i) => estadoAtual.mercado.cartas[i]
   );
@@ -343,12 +343,12 @@ function onTrocarClick() {
 
   if (cartasDoJogadorCount !== cartasMercadoSel.length) {
     return notificar(
-      "Para trocar, selecione o mesmo número de cartas da sua mão/camelos e do mercado."
+      "Para trocar, selecione o mesmo número de cartas da sua mão/vacas e do mercado."
     );
   }
 
-  if (cartasMercadoSel.some((c) => c.tipo === TipoCarta.CAMELO))
-    return notificar("Você não pode pegar camelos em uma troca.");
+  if (cartasMercadoSel.some((c) => c.tipo === TipoCarta.VACA))
+    return notificar("Você não pode pegar vacas em uma troca.");
 
   const maoAtual = j1.mao.length;
   const cartasDadas = selecao.mao.length;
@@ -366,8 +366,8 @@ function onTrocarClick() {
   const paraMercado = [],
     paraMao = [];
   indMao.forEach((i) => paraMercado.push(j1.mao.splice(i, 1)[0]));
-  for (let i = 0; i < selecao.cameloCount; i++) {
-    paraMercado.push(j1.camelos.pop());
+  for (let i = 0; i < selecao.vacaCount; i++) {
+    paraMercado.push(j1.vacas.pop());
   }
   indMercado.forEach((i) =>
     paraMao.push(estadoAtual.mercado.cartas.splice(i, 1)[0])
@@ -442,11 +442,11 @@ function fimDeRodada() {
   const j1 = estadoAtual.jogador1;
   const j2 = estadoAtual.jogador2;
 
-  let pontosCamelosJ1 = j1.camelo_count() > j2.camelo_count() ? 5 : 0;
-  let pontosCamelosJ2 = j2.camelo_count() > j1.camelo_count() ? 5 : 0;
+  let pontosVacasJ1 = j1.vaca_count() > j2.vaca_count() ? 5 : 0;
+  let pontosVacasJ2 = j2.vaca_count() > j1.vaca_count() ? 5 : 0;
 
-  j1.pontos_rodada = j1.calcular_pontos_rodada() + pontosCamelosJ1;
-  j2.pontos_rodada = j2.calcular_pontos_rodada() + pontosCamelosJ2;
+  j1.pontos_rodada = j1.calcular_pontos_rodada() + pontosVacasJ1;
+  j2.pontos_rodada = j2.calcular_pontos_rodada() + pontosVacasJ2;
 
   let vencedorMsg = `Empate na rodada!`;
   if (j1.pontos_rodada > j2.pontos_rodada) {
@@ -515,8 +515,8 @@ function exibirResumoFinalDoJogo() {
 }
 
 function iniciarNovaRodada() {
-  btnPegarCamelos.textContent = "Pegar Camelos";
-  btnPegarCamelos.onclick = onPegarCamelosClick;
+  btnPegarCamelos.textContent = "Pegar Vacas";
+  btnPegarCamelos.onclick = onPegarVacasClick;
   btnVender.style.display = "inline-block";
   btnTrocar.style.display = "inline-block";
   btnDesistir.style.display = "inline-block";

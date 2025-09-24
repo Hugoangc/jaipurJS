@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jaipur Online</title>
+    <title>Tropeiro de Minas</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -26,7 +26,7 @@
     </div>
     <div id="game-container">
       <header>
-        <h1>Jaipur</h1>
+        <h1>Tropeiro</h1>
         <button id="btn-regras" class="info-button">i</button>
         <div id="game-info">
           <p>Placar (MD3): <span id="placar-md3">0 a 0</span></p>
@@ -38,46 +38,67 @@
           <button id="btn-desistir">Desistir da Rodada</button>
         </div>
       </header>
-<div id="modal-regras" class="modal-overlay" style="display: none;">
-    <div class="modal-content">
-        <h2>Regras e Objetivo do Jogo</h2>
-        <div class="regras-texto">
+      <div id="modal-regras" class="modal-overlay" style="display: none">
+        <div class="modal-content">
+          <h2>Regras e Objetivo do Jogo</h2>
+          <div class="regras-texto">
             <h4>Objetivo</h4>
-            <p>Seja o comerciante mais rico de Jaipur! O primeiro jogador a conquistar <strong>2 Selos de Excelência</strong> vence o jogo. Você ganha um selo ao vencer uma rodada.</p>
-            
+            <p>
+              Seja o tropeiro mais rico de Minas! O primeiro jogador a
+              conquistar <strong>2 Selos de Excelência</strong> vence o jogo.
+              Você ganha um selo ao vencer uma rodada.
+            </p>
+
             <h4>No seu turno, escolha UMA ação:</h4>
             <ul>
-                <li><strong>Comprar Cartas:</strong>
-                    <ul>
-                        <li>Pegue <strong>1 única carta</strong> de mercadoria do mercado.</li>
-                        <li>Pegue <strong>TODOS os camelos</strong> do mercado.</li>
-                        <li><strong>Troque 2 ou mais cartas</strong> da sua mão/seus camelos por cartas do mercado.</li>
-                    </ul>
-                </li>
-                <li><strong>Vender Cartas:</strong>
-                    <ul>
-                        <li>Venda <strong>1 ou mais cartas do mesmo tipo</strong> da sua mão para coletar fichas de pontos.</li>
-                        <li>Vendas de 3, 4 ou 5 cartas rendem fichas de bônus!</li>
-                        <li>Mercadorias de luxo (💎 Ouro, 🥇 Prata, 🥈 Diamante) exigem uma venda mínima de 2 cartas.</li>
-                    </ul>
-                </li>
+              <li>
+                <strong>Pegar Cartas:</strong>
+                <ul>
+                  <li>
+                    Pegue <strong>1 única carta</strong> de produto do mercado.
+                  </li>
+                  <li>Pegue <strong>TODAS as vacas</strong> do mercado.</li>
+                  <li>
+                    <strong>Troque 2 ou mais cartas</strong> da sua mão/suas
+                    vacas por cartas do mercado.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <strong>Vender Cartas:</strong>
+                <ul>
+                  <li>
+                    Venda <strong>1 ou mais cartas do mesmo tipo</strong> da sua
+                    mão para coletar fichas de pontos.
+                  </li>
+                  <li>Vendas de 3, 4 ou 5 cartas rendem fichas de bônus!</li>
+                  <li>
+                    Produtos de luxo (💰 Ouro, 🫘 Café, 🧀 Queijo) exigem uma
+                    venda mínima de 2 cartas.
+                  </li>
+                </ul>
+              </li>
             </ul>
 
             <h4>Fim da Rodada</h4>
-            <p>A rodada termina quando o baralho de compras se esgota ou quando 3 pilhas de fichas de mercadorias acabam. O jogador com mais camelos ganha um bônus de 5 pontos!</p>
-        </div>
-        <div class="modal-buttons">
+            <p>
+              A rodada termina quando o baralho de compras se esgota ou quando 3
+              pilhas de fichas de produtos acabam. O jogador com mais vacas
+              ganha um bônus de 5 pontos!
+            </p>
+          </div>
+          <div class="modal-buttons">
             <button id="btn-fechar-regras">Fechar</button>
+          </div>
         </div>
-    </div>
-</div>
+      </div>
 
       <div id="opponent-area" class="player-area">
         <div class="player-info">
           <h2 id="j2-nome">Oponente</h2>
           <div class="stats">
             <p>Fichas: <span id="j2-fichas">0</span></p>
-            <p>Camelos: <span id="j2-camelos">0</span></p>
+            <p>Vacas: <span id="j2-camelos">0</span></p>
             <p>Selos: <span id="j2-selos">0</span></p>
           </div>
         </div>
@@ -97,7 +118,7 @@
           <h2 id="j1-nome">Você</h2>
           <div class="stats">
             <p>Fichas: <span id="j1-fichas">0</span></p>
-            <p>Camelos: <span id="j1-camelos">0</span></p>
+            <p>Vacas: <span id="j1-camelos">0</span></p>
             <p>Selos: <span id="j1-selos">0</span></p>
           </div>
         </div>
@@ -110,25 +131,23 @@
 
       <div id="action-panel">
         <div id="notification-area">
-          <p id="notification-text">Bem-vindo ao Jaipur! É a sua vez.</p>
+          <p id="notification-text">Bem-vindo ao Tropeiro! É a sua vez.</p>
           <p id="trade-indicator"></p>
         </div>
         <div id="action-buttons">
           <button id="btn-vender">Vender</button>
           <button id="btn-trocar">Trocar</button>
-          <button id="btn-pegar-camelos">Pegar Camelos</button>
+          <button id="btn-pegar-camelos">Pegar Vacas</button>
         </div>
       </div>
     </div>
 
-
-<div id="modal-fim-de-jogo" class="modal-overlay" style="display: none;">
+    <div id="modal-fim-de-jogo" class="modal-overlay" style="display: none">
       <div class="modal-content">
         <h2>Fim de Jogo!</h2>
         <p id="vencedor-final" class="vencedor-texto"></p>
         <h3>Resumo das Rodadas</h3>
-        <div id="detalhes-rodadas">
-          </div>
+        <div id="detalhes-rodadas"></div>
         <div class="modal-buttons">
           <button id="btn-jogar-novamente">Jogar Novamente</button>
         </div>
@@ -139,5 +158,4 @@
     <script src="ai.js"></script>
     <script src="main.js"></script>
   </body>
-</html>
 </html>

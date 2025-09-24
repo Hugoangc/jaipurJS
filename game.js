@@ -1,11 +1,11 @@
 const TipoCarta = Object.freeze({
-  DIAMANTE: "DIAMANTE",
+  QUEIJO: "QUEIJO",
   OURO: "OURO",
-  PRATA: "PRATA",
-  SEDA: "SEDA",
-  ESPECIA: "ESPECIA",
+  CAFE: "CAFE",
+  LEITE: "LEITE",
+  DOCE_DE_LEITE: "DOCE_DE_LEITE",
   COURO: "COURO",
-  CAMELO: "CAMELO",
+  VACA: "VACA",
 });
 
 class Carta {
@@ -31,13 +31,13 @@ class Baralho {
   }
   inicializar() {
     const contagem = {
-      [TipoCarta.DIAMANTE]: 6,
+      [TipoCarta.QUEIJO]: 6,
       [TipoCarta.OURO]: 6,
-      [TipoCarta.PRATA]: 6,
-      [TipoCarta.SEDA]: 8,
-      [TipoCarta.ESPECIA]: 8,
+      [TipoCarta.CAFE]: 6,
+      [TipoCarta.LEITE]: 8,
+      [TipoCarta.DOCE_DE_LEITE]: 8,
       [TipoCarta.COURO]: 10,
-      [TipoCarta.CAMELO]: 11,
+      [TipoCarta.VACA]: 11,
     };
     for (const tipo in contagem) {
       for (let i = 0; i < contagem[tipo]; i++)
@@ -75,11 +75,11 @@ class Mercado {
 
   inicializar_fichas() {
     this.fichas = {
-      [TipoCarta.DIAMANTE]: [7, 7, 5, 5, 5].map((v) => new Ficha(v)),
+      [TipoCarta.QUEIJO]: [7, 7, 5, 5, 5].map((v) => new Ficha(v)),
       [TipoCarta.OURO]: [6, 6, 5, 5, 5].map((v) => new Ficha(v)),
-      [TipoCarta.PRATA]: [5, 5, 5, 5, 5].map((v) => new Ficha(v)),
-      [TipoCarta.SEDA]: [5, 3, 3, 2, 2, 1, 1].map((v) => new Ficha(v)),
-      [TipoCarta.ESPECIA]: [5, 3, 3, 2, 2, 1, 1].map((v) => new Ficha(v)),
+      [TipoCarta.CAFE]: [5, 5, 5, 5, 5].map((v) => new Ficha(v)),
+      [TipoCarta.LEITE]: [5, 3, 3, 2, 2, 1, 1].map((v) => new Ficha(v)),
+      [TipoCarta.DOCE_DE_LEITE]: [5, 3, 3, 2, 2, 1, 1].map((v) => new Ficha(v)),
       [TipoCarta.COURO]: [4, 3, 2, 1, 1, 1, 1, 1, 1].map((v) => new Ficha(v)),
     };
 
@@ -100,7 +100,7 @@ class Mercado {
 
   inicializar(baralho) {
     for (let i = 0; i < 3; i++) {
-      this.cartas.push(new Carta(TipoCarta.CAMELO));
+      this.cartas.push(new Carta(TipoCarta.VACA));
     }
     for (let i = 0; i < 2; i++) {
       this.cartas.push(baralho.comprar());
@@ -140,26 +140,26 @@ class Jogador {
   constructor(nome) {
     this.nome = nome;
     this.mao = [];
-    this.camelos = [];
+    this.vacas = [];
     this.selos_excelencia = 0;
     this.fichas_coletadas = [];
     this.pontos_rodada = 0;
   }
 
-  camelo_count() {
-    return this.camelos.length;
+  vaca_count() {
+    return this.vacas.length;
   }
 
   pegar_carta(carta) {
-    if (carta.tipo === TipoCarta.CAMELO) {
-      this.camelos.push(carta);
+    if (carta.tipo === TipoCarta.VACA) {
+      this.vacas.push(carta);
     } else if (this.mao.length < 7) {
       this.mao.push(carta);
     }
   }
   resetarParaNovaRodada() {
     this.mao = [];
-    this.camelos = [];
+    this.vacas = [];
     this.fichas_coletadas = [];
     this.pontos_rodada = 0;
   }
@@ -174,9 +174,9 @@ class Jogador {
     if (cartasParaVender.length < quantidade) return false;
 
     const ehLuxo = [
-      TipoCarta.DIAMANTE,
+      TipoCarta.QUEIJO,
       TipoCarta.OURO,
-      TipoCarta.PRATA,
+      TipoCarta.CAFE,
     ].includes(tipo);
     if (ehLuxo && quantidade < 2) return false;
 
@@ -215,7 +215,7 @@ class Jogador {
     const novo = new Jogador(this.nome);
     novo.selos_excelencia = this.selos_excelencia;
     novo.mao = this.mao.map((c) => new Carta(c.tipo));
-    novo.camelos = this.camelos.map((c) => new Carta(c.tipo));
+    novo.vacas = this.vacas.map((c) => new Carta(c.tipo));
     novo.fichas_coletadas = this.fichas_coletadas.map(
       (f) => new Ficha(f.valor)
     );

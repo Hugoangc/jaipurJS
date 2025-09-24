@@ -19,7 +19,7 @@ function avaliar_estado(estado, jogadorMax, jogadorMin) {
   const calcular_pontuacao = (jogador, mercado) => {
     let pontuacao = 0;
     const W_FICHAS = 10;
-    const W_CAMELOS = 3;
+    const W_VACAS = 3; // Era W_CAMELOS
     const W_VALOR_POTENCIAL = 0.5;
     const W_MAO_GRANDE = 2;
     const W_MAO_CHEIA = -15; // Penalidade por mão cheia
@@ -31,8 +31,8 @@ function avaliar_estado(estado, jogadorMax, jogadorMin) {
     );
     pontuacao += pontosDeFichas * W_FICHAS;
 
-    // Componente 2: Vantagem de camelos
-    pontuacao += jogador.camelo_count() * W_CAMELOS;
+    // Componente 2: Vantagem de vacas
+    pontuacao += jogador.vaca_count() * W_VACAS;
 
     // Componente 3: Valor potencial da mão e bônus por conjuntos
     let contagemMao = {};
@@ -76,7 +76,7 @@ function gerar_jogadas_possiveis(estado_atual) {
   // Ação 1: Comprarcarta
   if (jogadorDaVez.mao.length < 7) {
     for (let i = 0; i < estado_atual.mercado.cartas.length; i++) {
-      if (estado_atual.mercado.cartas[i].tipo !== TipoCarta.CAMELO) {
+      if (estado_atual.mercado.cartas[i].tipo !== TipoCarta.VACA) {
         const novo_estado = estado_atual.clone();
         const jogador =
           novo_estado.turno % 2 !== 0
@@ -91,20 +91,20 @@ function gerar_jogadas_possiveis(estado_atual) {
     }
   }
 
-  // Ação 2: Pegar TODOS os camelos
-  if (estado_atual.mercado.cartas.some((c) => c.tipo === TipoCarta.CAMELO)) {
+  // Ação 2: Pegar TODAS as vacas
+  if (estado_atual.mercado.cartas.some((c) => c.tipo === TipoCarta.VACA)) {
     const novo_estado = estado_atual.clone();
     const jogador =
       novo_estado.turno % 2 !== 0 ? novo_estado.jogador1 : novo_estado.jogador2;
-    const camelosPegos = [];
+    const vacasPegas = [];
     novo_estado.mercado.cartas = novo_estado.mercado.cartas.filter((c) => {
-      if (c.tipo === TipoCarta.CAMELO) {
-        camelosPegos.push(c);
+      if (c.tipo === TipoCarta.VACA) {
+        vacasPegas.push(c);
         return false;
       }
       return true;
     });
-    camelosPegos.forEach((c) => jogador.pegar_carta(c));
+    vacasPegas.forEach((c) => jogador.pegar_carta(c));
     novo_estado.mercado.repor(novo_estado.baralho);
     novo_estado.turno++;
     jogadas_possiveis.push(novo_estado);
@@ -116,12 +116,13 @@ function gerar_jogadas_possiveis(estado_atual) {
   });
   for (const tipo in contagemMao) {
     const qtdTotal = contagemMao[tipo];
-    const minVenda =
-      tipo === TipoCarta.DIAMANTE ||
-      tipo === TipoCarta.OURO ||
-      tipo === TipoCarta.PRATA
-        ? 2
-        : 1;
+    const minVenda = [
+      TipoCarta.QUEIJO,
+      TipoCarta.OURO,
+      TipoCarta.CAFE,
+    ].includes(tipo)
+      ? 2
+      : 1;
 
     for (let qtdVender = minVenda; qtdVender <= qtdTotal; qtdVender++) {
       const novo_estado = estado_atual.clone();
@@ -138,7 +139,7 @@ function gerar_jogadas_possiveis(estado_atual) {
 
   const cartasMercadoParaTroca = [];
   estado_atual.mercado.cartas.forEach((carta, indice) => {
-    if (carta.tipo !== TipoCarta.CAMELO) {
+    if (carta.tipo !== TipoCarta.VACA) {
       cartasMercadoParaTroca.push({ carta, indice });
     }
   });
@@ -147,11 +148,11 @@ function gerar_jogadas_possiveis(estado_atual) {
   jogadorDaVez.mao.forEach((carta, indice) =>
     cartasJogadorParaTroca.push({ carta, indice, origem: "mao" })
   );
-  for (let i = 0; i < jogadorDaVez.camelo_count(); i++) {
+  for (let i = 0; i < jogadorDaVez.vaca_count(); i++) {
     cartasJogadorParaTroca.push({
-      carta: new Carta(TipoCarta.CAMELO),
+      carta: new Carta(TipoCarta.VACA),
       indice: i,
-      origem: "camelo",
+      origem: "vaca",
     });
   }
 
@@ -190,12 +191,10 @@ function gerar_jogadas_possiveis(estado_atual) {
           .filter((c) => c.origem === "mao")
           .map((c) => c.indice)
           .sort((a, b) => b - a);
-        const camelosDoados = comboJ.filter(
-          (c) => c.origem === "camelo"
-        ).length;
+        const vacasDoadas = comboJ.filter((c) => c.origem === "vaca").length;
 
         indicesMao.forEach((i) => jogador.mao.splice(i, 1));
-        jogador.camelos.length -= camelosDoados;
+        jogador.vacas.length -= vacasDoadas;
 
         // Adiciona as novas cartas
         cartasParaJogador.forEach((c) => jogador.pegar_carta(c));
@@ -238,10 +237,34 @@ function minimax_alfabeta(
       : estado_node.jogador2;
     return avaliar_estado(estado_node, jMax, jMin);
   }
+
   const proximas_jogadas = gerar_jogadas_possiveis(estado_node);
+
+  const jogadorMaxAtual = eh_jogador_max
+    ? estado_node.turno % 2 !== 0
+      ? estado_node.jogador1
+      : estado_node.jogador2
+    : estado_node.turno % 2 !== 0
+    ? estado_node.jogador2
+    : estado_node.jogador1;
+  const jogadorMinAtual = eh_jogador_max
+    ? estado_node.turno % 2 !== 0
+      ? estado_node.jogador2
+      : estado_node.jogador1
+    : estado_node.turno % 2 !== 0
+    ? estado_node.jogador1
+    : estado_node.jogador2;
+
+  proximas_jogadas.sort((a, b) => {
+    const pontuacaoA = avaliar_estado(a, jogadorMaxAtual, jogadorMinAtual);
+    const pontuacaoB = avaliar_estado(b, jogadorMaxAtual, jogadorMinAtual);
+    return eh_jogador_max ? pontuacaoB - pontuacaoA : pontuacaoA - pontuacaoB;
+  });
+
   if (proximas_jogadas.length === 0) {
     return eh_jogador_max ? -Infinity : Infinity;
   }
+
   if (eh_jogador_max) {
     let melhor_valor = -Infinity;
     for (const filho of proximas_jogadas) {
