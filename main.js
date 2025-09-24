@@ -175,17 +175,18 @@ document.addEventListener("DOMContentLoaded", () => {
       modalRegras.style.display = "none";
     }
   });
-  document.querySelectorAll(".modal-buttons button").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      PROFUNDIDADE_IA = parseInt(btn.dataset.depth);
-      NOME_DIFICULDADE_IA = btn.textContent;
-      modalDificuldade.style.display = "none";
-      renderizarTabelaFixa();
-      iniciarJogo();
+  document
+    .querySelectorAll("#modal-dificuldade .modal-buttons button")
+    .forEach((btn) => {
+      btn.addEventListener("click", () => {
+        PROFUNDIDADE_IA = parseInt(btn.dataset.depth);
+        NOME_DIFICULDADE_IA = btn.textContent;
+        modalDificuldade.style.display = "none";
+        renderizarTabelaFixa();
+        iniciarJogo();
+      });
     });
-  });
 });
-
 function limparSelecao() {
   selecao = { mao: [], mercado: [], cameloCount: 0 };
   document
@@ -485,12 +486,10 @@ function iniciarNovaRodada() {
 }
 
 function iniciarJogo() {
-
   if (estadoAtual) {
     jogador1.selos_excelencia = estadoAtual.jogador1.selos_excelencia;
     jogador2.selos_excelencia = estadoAtual.jogador2.selos_excelencia;
   }
-
 
   jogador1.resetarParaNovaRodada();
   jogador2.resetarParaNovaRodada();

@@ -345,36 +345,6 @@ header {
   font-family: "Merriweather", serif;
 }
 
-@media (max-width: 900px) {
-  body {
-    padding: 5px;
-  }
-  .hand {
-    flex-wrap: wrap;
-    gap: 5px;
-  }
-  .card {
-    width: 12vw;
-    height: 16.8vw;
-  }
-  .card-icon {
-    font-size: 4vw;
-  }
-  .card-name {
-    font-size: 1.2vw;
-  }
-
-  #central-area,
-  .player-area {
-    flex-direction: column;
-    gap: 20px;
-  }
-  #action-panel {
-    flex-direction: column;
-    gap: 15px;
-  }
-}
-
 .header-title {
   display: flex;
   align-items: center;
@@ -414,4 +384,56 @@ header {
 
 .regras-texto ul {
   padding-left: 20px;
+}
+
+@media (max-width: 900px) {
+  body {
+    padding: 5px;
+    zoom: unset;
+  }
+
+  #game-container {
+    width: 98%;
+    min-width: 0;
+  }
+
+  .hand {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .card {
+    width: 18vw;
+    height: 25.2vw;
+    max-width: 80px;
+    max-height: 112px;
+  }
+  .card-icon {
+    font-size: 8vw;
+  }
+  .card-name {
+    font-size: 2.5vw;
+  }
+
+  #central-area,
+  .player-area {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  #action-panel {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  #action-buttons {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+  #action-buttons button {
+    width: 100%;
+    margin-left: 0;
+  }
 }
