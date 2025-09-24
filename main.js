@@ -52,6 +52,9 @@ const modalFimDeJogo = get("modal-fim-de-jogo");
 const vencedorFinalEl = get("vencedor-final");
 const detalhesRodadasEl = get("detalhes-rodadas");
 const btnJogarNovamente = get("btn-jogar-novamente");
+const modalRegras = get("modal-regras");
+const btnRegras = get("btn-regras");
+const btnFecharRegras = get("btn-fechar-regras");
 
 function notificar(mensagem) {
   notificationTextEl.textContent = mensagem;
@@ -86,7 +89,7 @@ function renderizarTabelaFixa() {
   }
 }
 function onCamelStackRightClick(event) {
-  event.preventDefault(); //previne que o menu padrão do navegador
+  event.preventDefault();
   if (selecao.cameloCount > 0) {
     selecao.cameloCount--;
     atualizarIndicadorTroca();
@@ -160,7 +163,18 @@ document.addEventListener("DOMContentLoaded", () => {
   btnDesistir.addEventListener("click", onDesistirClick);
 
   btnJogarNovamente.addEventListener("click", () => location.reload());
+  btnRegras.addEventListener("click", () => {
+    modalRegras.style.display = "flex";
+  });
 
+  btnFecharRegras.addEventListener("click", () => {
+    modalRegras.style.display = "none";
+  });
+  modalRegras.addEventListener("click", (event) => {
+    if (event.target === modalRegras) {
+      modalRegras.style.display = "none";
+    }
+  });
   document.querySelectorAll(".modal-buttons button").forEach((btn) => {
     btn.addEventListener("click", () => {
       PROFUNDIDADE_IA = parseInt(btn.dataset.depth);
@@ -237,7 +251,7 @@ function atualizarIndicadorTroca() {
     return;
   }
 
-  let texto = "Seleção para troca: ";
+  let texto = "Seleção de cartas: ";
   const partes = [];
   if (cameloCount > 0) partes.push(`${cameloCount} Camelo(s)`);
   if (mao.length > 0) partes.push(`${mao.length} carta(s) da mão`);
@@ -392,7 +406,6 @@ function fimDeRodada() {
   let pontosCamelosJ1 = j1.camelo_count() > j2.camelo_count() ? 5 : 0;
   let pontosCamelosJ2 = j2.camelo_count() > j1.camelo_count() ? 5 : 0;
 
-  // Calcula e armazena o placar final da rodada na propriedade do jogador
   j1.pontos_rodada = j1.calcular_pontos_rodada() + pontosCamelosJ1;
   j2.pontos_rodada = j2.calcular_pontos_rodada() + pontosCamelosJ2;
 
@@ -411,7 +424,7 @@ function fimDeRodada() {
     placarJ2: j2.pontos_rodada,
   });
 
-  renderizar(); 
+  renderizar();
   notificar(
     `FIM DA RODADA! Placar Final: Você ${j1.pontos_rodada} x ${j2.pontos_rodada} Oponente.`
   );
@@ -472,6 +485,13 @@ function iniciarNovaRodada() {
 }
 
 function iniciarJogo() {
+
+  if (estadoAtual) {
+    jogador1.selos_excelencia = estadoAtual.jogador1.selos_excelencia;
+    jogador2.selos_excelencia = estadoAtual.jogador2.selos_excelencia;
+  }
+
+
   jogador1.resetarParaNovaRodada();
   jogador2.resetarParaNovaRodada();
 
