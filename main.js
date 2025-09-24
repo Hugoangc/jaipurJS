@@ -27,12 +27,12 @@ const VALORES_BASE = {
 const get = (id) => document.getElementById(id);
 const j1NomeEl = get("j1-nome"),
   j1FichasEl = get("j1-fichas"),
-  j1CamelosEl = get("j1-camelos"),
+  j1VacasEl = get("j1-vacas"),
   j1SelosEl = get("j1-selos"),
   j1MaoEl = get("j1-mao");
 const j2NomeEl = get("j2-nome"),
   j2FichasEl = get("j2-fichas"),
-  j2CamelosEl = get("j2-camelos"),
+  j2VacasEl = get("j2-vacas"),
   j2SelosEl = get("j2-selos"),
   j2MaoEl = get("j2-mao");
 const mercadoCartasEl = get("mercado-cartas"),
@@ -45,7 +45,7 @@ const tabelaValoresEl = get("tabela-valores");
 const tradeIndicatorEl = get("trade-indicator");
 const btnVender = get("btn-vender"),
   btnTrocar = get("btn-trocar"),
-  btnPegarCamelos = get("btn-pegar-camelos"),
+  btnPegarVacas = get("btn-pegar-vacas"),
   btnDesistir = get("btn-desistir");
 const modalDificuldade = get("modal-dificuldade");
 const modalFimDeJogo = get("modal-fim-de-jogo");
@@ -105,7 +105,7 @@ function renderizar() {
 
   j1NomeEl.textContent = j1.nome;
   j1FichasEl.textContent = j1.fichas_coletadas.length;
-  j1CamelosEl.textContent = j1.vaca_count();
+  j1VacasEl.textContent = j1.vaca_count();
   j1SelosEl.textContent = j1.selos_excelencia;
   j1MaoEl.innerHTML = "";
   j1.mao.forEach((carta, i) =>
@@ -114,7 +114,7 @@ function renderizar() {
 
   if (j1.vaca_count() > 0) {
     const stack = document.createElement("div");
-    stack.className = "camel-stack";
+    stack.className = "vaca-stack";
     stack.dataset.count = j1.vaca_count();
 
     for (let i = 0; i < j1.vaca_count(); i++) {
@@ -131,14 +131,14 @@ function renderizar() {
 
   j2NomeEl.textContent = j2.nome;
   j2FichasEl.textContent = j2.fichas_coletadas.length;
-  j2CamelosEl.textContent = j2.vaca_count();
+  j2VacasEl.textContent = j2.vaca_count();
   j2SelosEl.textContent = j2.selos_excelencia;
   j2MaoEl.innerHTML = "";
   for (let i = 0; i < j2.mao.length; i++)
     j2MaoEl.appendChild(criarElementoCarta(new Carta("VERSO"), i, "oponente"));
   if (j2.vaca_count() > 0) {
     const stack = document.createElement("div");
-    stack.className = "camel-stack";
+    stack.className = "vaca-stack";
     stack.dataset.count = j2.vaca_count();
     for (let i = 0; i < j2.vaca_count(); i++)
       stack.appendChild(
@@ -160,7 +160,7 @@ function renderizar() {
 document.addEventListener("DOMContentLoaded", () => {
   btnVender.addEventListener("click", onVenderClick);
   btnTrocar.addEventListener("click", onTrocarClick);
-  btnPegarCamelos.addEventListener("click", onPegarVacasClick);
+  btnPegarVacas.addEventListener("click", onPegarVacasClick);
   btnDesistir.addEventListener("click", onDesistirClick);
 
   btnJogarNovamente.addEventListener("click", () => location.reload());
@@ -197,6 +197,9 @@ function limparSelecao() {
 }
 
 function onCartaClick(cartaEl) {
+  if (modalFimDeJogo.style.display === "flex") {
+    return;
+  }
   const origem = cartaEl.dataset.origem;
   if (!["mao", "mercado"].includes(origem)) return;
 
@@ -263,7 +266,7 @@ function atualizarIndicadorTroca() {
   const partes = [];
 
   if (vacaCount > 0) {
-    partes.push(`<span id="camel-trade-indicator" class="trade-item" title="Clique para remover uma vaca">
+    partes.push(`<span id="vaca-trade-indicator" class="trade-item" title="Clique para remover uma vaca">
                     🐄 ${vacaCount} Vaca(s)
                  </span>`);
   }
@@ -276,9 +279,9 @@ function atualizarIndicadorTroca() {
 
   tradeIndicatorEl.innerHTML = texto + partes.join(" + ");
 
-  const camelIndicator = get("camel-trade-indicator");
-  if (camelIndicator) {
-    camelIndicator.addEventListener("click", () => {
+  const vacaIndicator = get("vaca-trade-indicator");
+  if (vacaIndicator) {
+    vacaIndicator.addEventListener("click", () => {
       if (selecao.vacaCount > 0) {
         selecao.vacaCount--;
         atualizarIndicadorTroca();
@@ -324,7 +327,7 @@ function onVenderClick() {
     );
   } else {
     notificar(
-      "Venda inválida! (Lembre-se: produtos de luxo 💰💎🧀 exigem no mínimo 2 cartas)."
+      "Venda inválida! (Lembre-se: produtos de luxo 💰🫘🧀 exigem no mínimo 2 cartas)."
     );
     limparSelecao();
   }
@@ -473,8 +476,8 @@ function fimDeRodada() {
       exibirResumoFinalDoJogo();
     } else {
       notificar(`${vencedorMsg} Clique em 'Próxima Rodada' para continuar.`);
-      btnPegarCamelos.textContent = "Próxima Rodada";
-      btnPegarCamelos.onclick = iniciarNovaRodada;
+      btnPegarVacas.textContent = "Próxima Rodada";
+      btnPegarVacas.onclick = iniciarNovaRodada;
       btnVender.style.display = "none";
       btnTrocar.style.display = "none";
       btnDesistir.style.display = "none";
@@ -515,8 +518,8 @@ function exibirResumoFinalDoJogo() {
 }
 
 function iniciarNovaRodada() {
-  btnPegarCamelos.textContent = "Pegar Vacas";
-  btnPegarCamelos.onclick = onPegarVacasClick;
+  btnPegarVacas.textContent = "Pegar Vacas";
+  btnPegarVacas.onclick = onPegarVacasClick;
   btnVender.style.display = "inline-block";
   btnTrocar.style.display = "inline-block";
   btnDesistir.style.display = "inline-block";

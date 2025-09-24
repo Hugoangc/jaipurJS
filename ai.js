@@ -19,7 +19,7 @@ function avaliar_estado(estado, jogadorMax, jogadorMin) {
   const calcular_pontuacao = (jogador, mercado) => {
     let pontuacao = 0;
     const W_FICHAS = 10;
-    const W_VACAS = 3; // Era W_CAMELOS
+    const W_VACAS = 3;
     const W_VALOR_POTENCIAL = 0.5;
     const W_MAO_GRANDE = 2;
     const W_MAO_CHEIA = -15; // Penalidade por mão cheia
