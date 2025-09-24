@@ -88,6 +88,7 @@ function renderizarTabelaFixa() {
     }
   }
 }
+
 function onCamelStackRightClick(event) {
   event.preventDefault();
   if (selecao.cameloCount > 0) {
@@ -228,13 +229,18 @@ function onCartaClick(cartaEl) {
   }
   atualizarIndicadorTroca();
 }
-
 function onCamelStackClick(event) {
   event.preventDefault();
-  if (selecao.cameloCount < estadoAtual.jogador1.camelo_count()) {
-    selecao.cameloCount++;
-    atualizarIndicadorTroca();
+  const totalCamelos = estadoAtual.jogador1.camelo_count();
+  if (totalCamelos === 0) {
+    return;
   }
+  if (selecao.cameloCount < totalCamelos) {
+    selecao.cameloCount++;
+  } else {
+    selecao.cameloCount = 0;
+  }
+  atualizarIndicadorTroca();
 }
 
 function onCamelStackRightClick(event) {
@@ -244,21 +250,41 @@ function onCamelStackRightClick(event) {
     atualizarIndicadorTroca();
   }
 }
-
 function atualizarIndicadorTroca() {
   const { mao, mercado, cameloCount } = selecao;
+
+  tradeIndicatorEl.innerHTML = "";
+
   if (mao.length === 0 && mercado.length === 0 && cameloCount === 0) {
-    tradeIndicatorEl.textContent = "";
     return;
   }
 
-  let texto = "Seleção de cartas: ";
+  let texto = "<span>Seleção para troca: </span>";
   const partes = [];
-  if (cameloCount > 0) partes.push(`${cameloCount} Camelo(s)`);
-  if (mao.length > 0) partes.push(`${mao.length} carta(s) da mão`);
-  if (mercado.length > 0) partes.push(`${mercado.length} carta(s) do mercado`);
 
-  tradeIndicatorEl.textContent = texto + partes.join(" + ");
+  if (cameloCount > 0) {
+    partes.push(`<span id="camel-trade-indicator" class="trade-item" title="Clique para remover um camelo">
+                    🐫 ${cameloCount} Camelo(s)
+                 </span>`);
+  }
+  if (mao.length > 0)
+    partes.push(`<span class="trade-item">✋ ${mao.length} da mão</span>`);
+  if (mercado.length > 0)
+    partes.push(
+      `<span class="trade-item">🛒 ${mercado.length} do mercado</span>`
+    );
+
+  tradeIndicatorEl.innerHTML = texto + partes.join(" + ");
+
+  const camelIndicator = get("camel-trade-indicator");
+  if (camelIndicator) {
+    camelIndicator.addEventListener("click", () => {
+      if (selecao.cameloCount > 0) {
+        selecao.cameloCount--;
+        atualizarIndicadorTroca();
+      }
+    });
+  }
 }
 
 function onPegarCamelosClick() {
@@ -320,8 +346,20 @@ function onTrocarClick() {
       "Para trocar, selecione o mesmo número de cartas da sua mão/camelos e do mercado."
     );
   }
+
   if (cartasMercadoSel.some((c) => c.tipo === TipoCarta.CAMELO))
     return notificar("Você não pode pegar camelos em uma troca.");
+
+  const maoAtual = j1.mao.length;
+  const cartasDadas = selecao.mao.length;
+  const cartasRecebidas = selecao.mercado.length;
+  const maoFinal = maoAtual - cartasDadas + cartasRecebidas;
+
+  if (maoFinal > 7) {
+    return notificar(
+      `Troca inválida! Sua mão ficaria com ${maoFinal} cartas (limite de 7).`
+    );
+  }
 
   const indMao = selecao.mao.sort((a, b) => b - a),
     indMercado = selecao.mercado.sort((a, b) => b - a);

@@ -190,22 +190,19 @@ header {
   align-items: center;
   margin-left: 20px;
   cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.camel-stack:hover {
+  transform: translateY(-5px);
 }
 .camel-stack .card {
-  margin-left: -6vw;
+  margin-left: -6.5vw;
   box-shadow: -1px 1px 3px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
 }
 .camel-stack .card:first-child {
   margin-left: 0;
   z-index: 5;
-}
-.camel-stack:hover .card:not(:first-child) {
-  margin-left: -5.5vw;
-  transform: translateY(-10px);
-}
-.camel-stack:hover .card:first-child {
-  transform: translateY(-10px);
 }
 .camel-stack .card:not(:first-child) > * {
   visibility: hidden;
@@ -436,4 +433,30 @@ header {
     width: 100%;
     margin-left: 0;
   }
+}
+
+#trade-indicator {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+}
+
+.trade-item {
+  background-color: var(--cor-fundo);
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+#camel-trade-indicator {
+  cursor: pointer;
+  border: 2px solid var(--cor-destaque);
+  transition: background-color 0.2s;
+}
+
+#camel-trade-indicator:hover {
+  background-color: #eaddc5;
 }
