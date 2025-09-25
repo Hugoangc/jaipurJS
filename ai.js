@@ -215,7 +215,7 @@ function gerar_jogadas_possiveis(
       CAFE: 6,
       LEITE: 4,
       DOCE_DE_LEITE: 4,
-      COURO: 3,
+      BATATA: 3,
       VACA: 1,
     };
 

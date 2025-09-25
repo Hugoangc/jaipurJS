@@ -4,7 +4,7 @@ const TipoCarta = Object.freeze({
   CAFE: "CAFE",
   LEITE: "LEITE",
   DOCE_DE_LEITE: "DOCE_DE_LEITE",
-  COURO: "COURO",
+  BATATA: "BATATA",
   VACA: "VACA",
 });
 
@@ -36,7 +36,7 @@ class Baralho {
       [TipoCarta.CAFE]: 6,
       [TipoCarta.LEITE]: 8,
       [TipoCarta.DOCE_DE_LEITE]: 8,
-      [TipoCarta.COURO]: 10,
+      [TipoCarta.BATATA]: 10,
       [TipoCarta.VACA]: 11,
     };
     for (const tipo in contagem) {
@@ -80,7 +80,7 @@ class Mercado {
       [TipoCarta.CAFE]: [5, 5, 5, 5, 5].map((v) => new Ficha(v)),
       [TipoCarta.LEITE]: [5, 3, 3, 2, 2, 1, 1].map((v) => new Ficha(v)),
       [TipoCarta.DOCE_DE_LEITE]: [5, 3, 3, 2, 2, 1, 1].map((v) => new Ficha(v)),
-      [TipoCarta.COURO]: [4, 3, 2, 1, 1, 1, 1, 1, 1].map((v) => new Ficha(v)),
+      [TipoCarta.BATATA]: [4, 3, 2, 1, 1, 1, 1, 1, 1].map((v) => new Ficha(v)),
     };
 
     const bonus3Val = [1, 2, 3, 2, 1, 3];

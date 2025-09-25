@@ -160,9 +160,9 @@ header h1 {
   background-color: #c68e4c;
   color: white;
 }
-.card[data-tipo="COURO"] {
-  background-color: #d2691e;
-  color: white;
+.card[data-tipo="BATATA"] {
+  background-color: lab(88.1% 5.59 22.85);
+  color: #4a2c2a;
 }
 .card[data-tipo="VACA"] {
   background-color: #f5f5dc;

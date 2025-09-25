@@ -11,7 +11,7 @@ const CARTA_VISUALS = {
   CAFE: { icon: "🫘", name: "Café" },
   LEITE: { icon: "🍶", name: "Leite" },
   DOCE_DE_LEITE: { icon: "🍮", name: "Doce de Leite" },
-  COURO: { icon: "👜", name: "Couro" },
+  BATATA: { icon: "🥔", name: "Batata" },
   VACA: { icon: "🐄", name: "Vaca" },
   VERSO: { icon: " T ", name: "Tropeiro" },
 };
@@ -21,7 +21,7 @@ const VALORES_BASE = {
   CAFE: 5,
   LEITE: 3,
   DOCE_DE_LEITE: 3,
-  COURO: 1,
+  BATATA: 1,
 };
 
 const get = (id) => document.getElementById(id);
