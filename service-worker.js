@@ -1,4 +1,4 @@
-const CACHE_NAME = "tropeiro-cache-v3";
+const CACHE_NAME = "tropeiro-cache-v1";
 const urlsToCache = [
   "/",
   "/index.html",
@@ -8,7 +8,7 @@ const urlsToCache = [
   "/ai.js",
   "/images/github.png",
   "/images/icon-192.png",
-  "images/icon-512.png",
+  "/images/icon-512.png",
 ];
 
 self.addEventListener("install", (event) => {
@@ -30,4 +30,5 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
 
