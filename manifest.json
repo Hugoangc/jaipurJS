@@ -10,14 +10,15 @@
   "icons": [
     {
       "src": "images/icon-192.png",
-      "type": "images/png",
+      "type": "image/png",
       "sizes": "192x192"
     },
     {
       "src": "images/icon-512.png",
-      "type": "images/png",
+      "type": "image/png",
       "sizes": "512x512"
     }
   ]
 }
+
 
