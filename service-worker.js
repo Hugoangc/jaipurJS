@@ -1,4 +1,4 @@
-const CACHE_NAME = "tropeiro-cache-v1";
+const CACHE_NAME = "tropeiro-cache-v3";
 const urlsToCache = [
   "/",
   "/index.html",
@@ -30,5 +30,6 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
 
 
