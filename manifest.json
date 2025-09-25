@@ -1,0 +1,21 @@
+{
+  "name": "Tropeiro de Minas",
+  "short_name": "Tropeiro",
+  "start_url": "/index.html",
+  "display": "fullscreen",
+  "background_color": "#f0ead6",
+  "theme_color": "#d2b48c",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}

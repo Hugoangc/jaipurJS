@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#d2b48c" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tropeiro de Minas</title>
@@ -28,6 +30,21 @@
     <div id="game-container">
       <header>
         <h1>Tropeiro</h1>
+        <a
+          id="github-link"
+          href="https://github.com/hugoangc"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Ver código no GitHub"
+        >
+          <img
+            src="image/github.png"
+            alt="Ícone do GitHub"
+            width="24"
+            height="24"
+          />
+          <span>Hugo Angelis</span>
+        </a>
         <button id="btn-regras" class="info-button">i</button>
         <div id="game-info">
           <p>Placar (MD3): <span id="placar-md3">0 a 0</span></p>
@@ -276,5 +293,23 @@
     <script src="game.js"></script>
     <script src="ai.js"></script>
     <script src="main.js"></script>
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/service-worker.js").then(
+            (registration) => {
+              console.log(
+                "ServiceWorker registration successful with scope: ",
+                registration.scope
+              );
+            },
+            (err) => {
+              console.log("ServiceWorker registration failed: ", err);
+            }
+          );
+        });
+      }
+    </script>
   </body>
 </html>
