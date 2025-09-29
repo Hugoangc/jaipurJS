@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
-    <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#d2b48c" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tropeiro de Minas</title>
-    <link rel="stylesheet" href="styles/base.css" />
-    <link rel="stylesheet" href="styles/layout.css" />
-    <link rel="stylesheet" href="styles/card.css" />
-    <link rel="stylesheet" href="styles/components.css" />
-    <link rel="stylesheet" href="styles/tutorial.css" />
-    <link rel="stylesheet" href="styles/responsive.css" />
+    <link rel="manifest" href="public/manifest.json" />
+
+    <link rel="stylesheet" href="src/styles/base.css" />
+    <link rel="stylesheet" href="src/styles/layout.css" />
+    <link rel="stylesheet" href="src/styles/card.css" />
+    <link rel="stylesheet" href="src/styles/components.css" />
+    <link rel="stylesheet" href="src/styles/tutorial.css" />
+    <link rel="stylesheet" href="src/styles/responsive.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -91,7 +92,7 @@
           title="Ver código no GitHub"
         >
           <img
-            src="images/github.png"
+            src="public/images/github.png"
             alt="Ícone do GitHub"
             width="24"
             height="24"
@@ -350,15 +351,15 @@
       </div>
     </div>
 
-    <script src="game.js"></script>
-    <script src="ai.js"></script>
-    <script src="tutorial.js"></script>
-    <script src="main.js"></script>
+    <script src="src/js/game.js"></script>
+    <script src="src/js/ia.js"></script>
+    <script src="src/js/tutorial.js"></script>
+    <script src="src/js/main.js"></script>
 
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
-          navigator.serviceWorker.register("/service-worker.js").then(
+          navigator.serviceWorker.register("/public/service-worker.js").then(
             (registration) => {
               console.log(
                 "ServiceWorker registration successful with scope: ",
