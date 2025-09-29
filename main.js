@@ -1,5 +1,7 @@
-let estadoAtual, PROFUNDIDADE_IA;
-let NOME_DIFICULDADE_IA = "";
+let tutorialSystem = new TutorialSystem();
+window.tutorialSystem = tutorialSystem;
+
+let estadoAtual;
 let selecao = { mao: [], mercado: [], vacaCount: 0 };
 let historicoRodadas = [];
 let jogador1 = new Jogador("Você");
@@ -47,14 +49,10 @@ const btnVender = get("btn-vender"),
   btnTrocar = get("btn-trocar"),
   btnPegarVacas = get("btn-pegar-vacas"),
   btnDesistir = get("btn-desistir");
-const modalDificuldade = get("modal-dificuldade");
 const modalFimDeJogo = get("modal-fim-de-jogo");
 const vencedorFinalEl = get("vencedor-final");
 const detalhesRodadasEl = get("detalhes-rodadas");
 const btnJogarNovamente = get("btn-jogar-novamente");
-const modalRegras = get("modal-regras");
-const btnRegras = get("btn-regras");
-const btnFecharRegras = get("btn-fechar-regras");
 
 function notificar(mensagem) {
   notificationTextEl.textContent = mensagem;
@@ -157,56 +155,12 @@ function renderizar() {
   limparSelecao();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  btnVender.addEventListener("click", onVenderClick);
-  btnTrocar.addEventListener("click", onTrocarClick);
-  btnPegarVacas.addEventListener("click", onPegarVacasClick);
-  btnDesistir.addEventListener("click", onDesistirClick);
-  btnJogarNovamente.addEventListener("click", () => location.reload());
+btnVender.addEventListener("click", onVenderClick);
+btnTrocar.addEventListener("click", onTrocarClick);
+btnPegarVacas.addEventListener("click", onPegarVacasClick);
+btnDesistir.addEventListener("click", onDesistirClick);
+btnJogarNovamente.addEventListener("click", () => location.reload());
 
-  const modalContentRegras = document.querySelector(
-    "#modal-regras .modal-content"
-  );
-  const btnToggleRegras = get("btn-toggle-regras");
-
-  btnRegras.addEventListener("click", () => {
-    modalContentRegras.classList.remove("mostrando-detalhes");
-    btnToggleRegras.textContent = "Ver Regras Detalhadas";
-    modalRegras.style.display = "flex";
-  });
-
-  btnToggleRegras.addEventListener("click", () => {
-    modalContentRegras.classList.toggle("mostrando-detalhes");
-
-    if (modalContentRegras.classList.contains("mostrando-detalhes")) {
-      btnToggleRegras.textContent = "Ver Resumo";
-    } else {
-      btnToggleRegras.textContent = "Ver Regras Detalhadas";
-    }
-  });
-
-  btnFecharRegras.addEventListener("click", () => {
-    modalRegras.style.display = "none";
-  });
-
-  modalRegras.addEventListener("click", (event) => {
-    if (event.target === modalRegras) {
-      modalRegras.style.display = "none";
-    }
-  });
-
-  document
-    .querySelectorAll("#modal-dificuldade .modal-buttons button")
-    .forEach((btn) => {
-      btn.addEventListener("click", () => {
-        PROFUNDIDADE_IA = parseInt(btn.dataset.depth);
-        NOME_DIFICULDADE_IA = btn.textContent;
-        modalDificuldade.style.display = "none";
-        renderizarTabelaFixa();
-        iniciarJogo();
-      });
-    });
-});
 function limparSelecao() {
   selecao = { mao: [], mercado: [], vacaCount: 0 };
   document
@@ -633,7 +587,10 @@ function iniciarJogo() {
     historicoRodadas = [];
   }
 
+  renderizarTabelaFixa();
   renderizar();
   notificar("Nova rodada começou. É a sua vez.");
   document.body.style.pointerEvents = "auto";
 }
+
+window.iniciarJogoComDificuldade = iniciarJogo;

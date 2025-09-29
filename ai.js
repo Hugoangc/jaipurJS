@@ -1,25 +1,22 @@
+// Cache global para estados já avaliados
 const cacheTransposicao = new Map();
 const MAX_CACHE_SIZE = 10000;
 
 function gerarHashEstado(estado) {
-  // Gera uma chave única para o estado atual
   const j1 = estado.jogador1;
   const j2 = estado.jogador2;
 
-  // Contagem de cartas por tipo para cada jogador
   const contJ1 = {};
   const contJ2 = {};
 
   j1.mao.forEach((c) => (contJ1[c.tipo] = (contJ1[c.tipo] || 0) + 1));
   j2.mao.forEach((c) => (contJ2[c.tipo] = (contJ2[c.tipo] || 0) + 1));
 
-  // Mercado
   const mercado = estado.mercado.cartas
     .map((c) => c.tipo)
     .sort()
     .join("");
 
-  // Hash simples
   return `${JSON.stringify(contJ1)}_${JSON.stringify(
     contJ2
   )}_${mercado}_${j1.vaca_count()}_${j2.vaca_count()}_${estado.turno % 2}`;
@@ -65,6 +62,7 @@ function avaliar_estado(estado, jogadorMax, jogadorMin) {
     let contagemMao = {};
     jogador.mao.forEach((carta) => {
       contagemMao[carta.tipo] = (contagemMao[carta.tipo] || 0) + 1;
+      // Adiciona o valor potencial com base na melhor ficha disponível no mercado
       if (mercado.fichas[carta.tipo] && mercado.fichas[carta.tipo].length > 0) {
         const melhorFichaValor =
           mercado.fichas[carta.tipo][
@@ -103,13 +101,14 @@ function gerar_jogadas_possiveis(
       ? estado_atual.jogador1
       : estado_atual.jogador2;
 
-  // PODA 1: limitar ações complexas dependendo da profundidade
+  // PODA 1: Em profundidades baixas, limitar ações complexas
   const limitarAcoes = profundidade_restante <= 1;
 
   // Ação 1: Comprar carta
   if (jogadorDaVez.mao.length < 7) {
     const cartasMercado = estado_atual.mercado.cartas;
 
+    // em profundidade baixa, só considerar as 3 melhores cartas
     const limite = limitarAcoes
       ? Math.min(3, cartasMercado.length)
       : cartasMercado.length;
@@ -155,7 +154,7 @@ function gerar_jogadas_possiveis(
     contagemMao[c.tipo] = (contagemMao[c.tipo] || 0) + 1;
   });
 
-  // PODA 2: Em profundidades baixas, só considerar vendas ótimas
+  // PODA 2: Em profundidades baixas, só considerar boas vendas
   for (const tipo in contagemMao) {
     const qtdTotal = contagemMao[tipo];
     const minVenda = [
@@ -166,6 +165,7 @@ function gerar_jogadas_possiveis(
       ? 2
       : 1;
 
+    // caso tiver limitando, só considerar vendas de 3+ cartas ou todas as cartas
     const vendasConsiderar = limitarAcoes
       ? [qtdTotal, Math.max(3, minVenda)].filter(
           (q) => q >= minVenda && q <= qtdTotal
@@ -185,7 +185,8 @@ function gerar_jogadas_possiveis(
     }
   }
 
-  // PODA 3: Limitar trocas drasticamente em profundidades baixas
+  // Ação 4: Trocar cartas
+  // PODA 3: Limitar trocas em profundidades baixas
   if (!limitarAcoes || profundidade_restante > 2) {
     const LIMITE_TROCA = limitarAcoes ? 2 : 3;
     const MAX_COMBOS_POR_TAMANHO = 10; // Limitar combinações
@@ -215,11 +216,11 @@ function gerar_jogadas_possiveis(
       CAFE: 6,
       LEITE: 4,
       DOCE_DE_LEITE: 4,
-      BATATA: 3,
+      COURO: 3,
       VACA: 1,
     };
 
-    // Só considerar trocas de tamanho 2 nas dificuldades baixas
+    // Só considerar trocas de tamanho 2 em profundidades baixas
     const tamanhoMax = Math.min(
       cartasMercadoParaTroca.length,
       cartasJogadorParaTroca.length,
@@ -233,7 +234,7 @@ function gerar_jogadas_possiveis(
 
       // PODA 4: Limitar número de combinações consideradas
       if (combosMercado.length > MAX_COMBOS_POR_TAMANHO) {
-        // Ordenar por valor e pegar apenas as melhores
+        // Ordenar por valor e pegar as melhores
         combosMercado = combosMercado
           .map((combo) => ({
             combo,
@@ -362,7 +363,7 @@ function minimax_alfabeta(
 
     // Guardar no cache
     if (cacheTransposicao.size > MAX_CACHE_SIZE) {
-      // Limpar cache quando ficar grande
+      // Limpar cache quando grande
       const keysToDelete = Array.from(cacheTransposicao.keys()).slice(
         0,
         MAX_CACHE_SIZE / 2
@@ -384,7 +385,7 @@ function minimax_alfabeta(
     return eh_jogador_max ? -Infinity : Infinity;
   }
 
-  // Ordenação heurística
+  // Ordenação heurística para poda
   const jogadorMaxAtual = eh_jogador_max
     ? estado_node.turno % 2 !== 0
       ? estado_node.jogador1
@@ -400,7 +401,7 @@ function minimax_alfabeta(
     ? estado_node.jogador1
     : estado_node.jogador2;
 
-  // PODA 5: rofundidades baixas, considerar apenas as melhores jogadas
+  // PODA 5: Em profundidades baixas, considerar apenas as melhores jogadas
   let jogadasParaAvaliar = proximas_jogadas;
   if (profundidade <= 2 && proximas_jogadas.length > 15) {
     jogadasParaAvaliar = proximas_jogadas
@@ -495,7 +496,7 @@ function encontrar_melhor_jogada_alfabeta(
 
   jogadasComValor.sort((a, b) => b.valorHeuristico - a.valorHeuristico);
 
-  // PODA 6: profundidade 4
+  // PODA 6: Para profundidade 4, limitar ainda mais as jogadas consideradas
   let jogadasParaAvaliar = jogadasComValor;
   if (profundidade >= 4 && jogadasComValor.length > 10) {
     jogadasParaAvaliar = jogadasComValor.slice(0, 10);
@@ -523,7 +524,7 @@ function encontrar_melhor_jogada_alfabeta(
     }
     alpha = Math.max(alpha, melhor_valor);
 
-    // Corte antecipado
+    // Corte antecipado se encontrarmos uma jogada muito boa
     if (profundidade >= 4 && melhor_valor > 100) {
       break;
     }

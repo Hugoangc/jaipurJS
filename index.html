@@ -6,7 +6,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tropeiro de Minas</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="styles/base.css" />
+    <link rel="stylesheet" href="styles/layout.css" />
+    <link rel="stylesheet" href="styles/card.css" />
+    <link rel="stylesheet" href="styles/components.css" />
+    <link rel="stylesheet" href="styles/tutorial.css" />
+    <link rel="stylesheet" href="styles/responsive.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -18,16 +23,64 @@
     <div id="modal-dificuldade" class="modal-overlay">
       <div class="modal-content">
         <h2>Escolha a Dificuldade</h2>
-        <p>A dificuldade define o quão "inteligente" o oponente será.</p>
-        <div class="modal-buttons">
-          <button id="btn-facil" data-depth="1">Fácil</button>
-          <button id="btn-medio" data-depth="2">Médio</button>
-          <button id="btn-dificil" data-depth="3">Difícil</button>
-          <button id="EXTREMO" data-depth="4">Extremo</button>
+
+        <div class="difficulty-slider-container">
+          <div class="difficulty-display">
+            <div id="difficulty-name" class="difficulty-name">Tutorial</div>
+            <div id="difficulty-description" class="difficulty-description">
+              Aprenda as mecânicas do jogo com orientação passo a passo
+            </div>
+          </div>
+
+          <div class="slider-wrapper">
+            <input
+              type="range"
+              min="0"
+              max="4"
+              value="0"
+              class="difficulty-slider"
+              id="difficulty-slider"
+            />
+
+            <div class="difficulty-markers">
+              <span class="marker active" data-level="0">Tutorial</span>
+              <span class="marker" data-level="1">Iniciante</span>
+              <span class="marker" data-level="2">Moderado</span>
+              <span class="marker" data-level="3">Difícil</span>
+              <span class="marker" data-level="4">Extremo</span>
+            </div>
+          </div>
         </div>
+
+        <button id="start-game-btn" class="start-button tutorial-mode">
+          Iniciar Tutorial
+        </button>
       </div>
     </div>
-    <div id="game-container">
+
+    <div id="tutorial-overlay" class="tutorial-overlay">
+      <div id="tutorial-spotlight" class="tutorial-spotlight"></div>
+    </div>
+    <div id="tutorial-tooltip" class="tutorial-tooltip" style="display: none">
+      <h3 id="tutorial-title">Título</h3>
+      <p id="tutorial-text">Texto do tutorial</p>
+      <div class="tutorial-buttons">
+        <button class="tutorial-btn tutorial-btn-skip" id="tutorial-skip">
+          Pular Tutorial
+        </button>
+        <button class="tutorial-btn tutorial-btn-next" id="tutorial-next">
+          Próximo
+        </button>
+      </div>
+    </div>
+    <div id="tutorial-progress" class="tutorial-progress">
+      <div class="tutorial-dots" id="tutorial-dots"></div>
+    </div>
+    <div id="tutorial-mode-indicator" class="tutorial-mode-indicator">
+      🎓 Modo Tutorial
+    </div>
+
+    <div id="game-container" style="display: none">
       <header>
         <h1>Tropeiro</h1>
         <a
@@ -48,11 +101,18 @@
         <button id="btn-regras" class="info-button">i</button>
         <div id="game-info">
           <p>Placar (MD3): <span id="placar-md3">0 a 0</span></p>
-          <p>Dificuldade: <span id="dificuldade-jogo">-</span></p>
+
           <p>Turno: <span id="turno-atual">1</span></p>
           <p>Cartas no Baralho: <span id="cartas-baralho">55</span></p>
+          <div
+            id="difficulty-display-header"
+            title="Clique para alterar a dificuldade"
+          >
+            <p>Dificuldade: <span id="dificuldade-jogo">-</span></p>
+          </div>
         </div>
         <div id="header-actions">
+          <button id="btn-reiniciar">↻ Reiniciar Jogo</button>
           <button id="btn-desistir">Desistir da Rodada</button>
         </div>
       </header>
@@ -292,6 +352,7 @@
 
     <script src="game.js"></script>
     <script src="ai.js"></script>
+    <script src="tutorial.js"></script>
     <script src="main.js"></script>
 
     <script>
