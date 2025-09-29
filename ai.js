@@ -1,5 +1,4 @@
-// Cache global para estados já avaliados
-const cacheTransposicao = new Map();
+const cacheTransposicao = new Map(); // Cache global para estados já avaliados
 const MAX_CACHE_SIZE = 10000;
 
 function gerarHashEstado(estado) {
@@ -496,7 +495,7 @@ function encontrar_melhor_jogada_alfabeta(
 
   jogadasComValor.sort((a, b) => b.valorHeuristico - a.valorHeuristico);
 
-  // PODA 6: Para profundidade 4, limitar ainda mais as jogadas consideradas
+  // PODA 6: profundidade 4+, limitar ainda mais as jogadas consideradas
   let jogadasParaAvaliar = jogadasComValor;
   if (profundidade >= 4 && jogadasComValor.length > 10) {
     jogadasParaAvaliar = jogadasComValor.slice(0, 10);
@@ -524,7 +523,7 @@ function encontrar_melhor_jogada_alfabeta(
     }
     alpha = Math.max(alpha, melhor_valor);
 
-    // Corte antecipado se encontrarmos uma jogada muito boa
+    // Corte caso encontre uma jogada boa
     if (profundidade >= 4 && melhor_valor > 100) {
       break;
     }
@@ -532,3 +531,4 @@ function encontrar_melhor_jogada_alfabeta(
 
   return melhor_jogada;
 }
+
