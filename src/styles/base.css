@@ -1,0 +1,43 @@
+:root {
+  --cor-fundo: #f0ead6;
+  --cor-tabuleiro: #d2b48c;
+  --cor-texto: #4a2c2a;
+  --cor-destaque: #8b4513;
+  --cor-carta-verso: #a52a2a;
+  --cor-tutorial: #27ae60;
+  --cor-tutorial-light: #52c77b;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
+  margin: 0;
+  padding: 10px;
+  box-sizing: border-box;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Merriweather", serif;
+  color: var(--cor-destaque);
+  margin: 0;
+  padding: 0;
+}
+
+#github-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--cor-texto);
+  font-weight: 500;
+  transition: color 0.2s ease-in-out;
+}
+
+#github-link:hover {
+  color: var(--cor-destaque);
+}

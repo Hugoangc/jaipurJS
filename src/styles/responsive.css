@@ -1,0 +1,210 @@
+@media (max-width: 768px) {
+  body {
+    padding: 5px;
+  }
+  #game-container {
+    gap: 5px;
+    min-height: calc(100vh - 10px);
+  }
+  header {
+    padding: 6px 10px;
+    flex-direction: column;
+    gap: 8px;
+  }
+  header h1 {
+    font-size: 1.3rem;
+  }
+  #game-info {
+    font-size: 0.8em;
+    gap: 10px;
+    justify-content: center;
+  }
+  #header-actions {
+    order: -1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .player-area {
+    padding: 8px;
+  }
+  .player-info {
+    min-width: 100px;
+  }
+  .player-info h2 {
+    font-size: 1rem;
+  }
+  .stats p {
+    font-size: 0.75em;
+  }
+  .hand {
+    gap: 3px;
+    min-height: 70px;
+    padding: 3px;
+  }
+  .card {
+    width: clamp(45px, 15vw, 60px);
+    height: clamp(63px, 21vw, 84px);
+    padding: 2px;
+  }
+  .card-icon {
+    font-size: clamp(16px, 6vw, 24px);
+  }
+  .card-name {
+    font-size: clamp(6px, 2vw, 10px);
+  }
+  .card.selected {
+    transform: translateY(-8px);
+  }
+  .card:hover {
+    transform: translateY(-2px);
+  }
+  .vaca-stack {
+    margin-left: 20px;
+  }
+  .vaca-stack .card:nth-child(2) {
+    top: 2px;
+    left: 2px;
+  }
+  .vaca-stack .card:nth-child(3) {
+    top: 4px;
+    left: 4px;
+  }
+  .vaca-stack .card:nth-child(4) {
+    top: 6px;
+    left: 6px;
+  }
+  .vaca-stack .card:nth-child(5) {
+    top: 8px;
+    left: 8px;
+  }
+  .vaca-stack::after {
+    width: 25px;
+    height: 25px;
+    font-size: 1em;
+    bottom: -5px;
+    right: -12px;
+  }
+  #central-area {
+    padding: 8px;
+    gap: 10px;
+  }
+  #mercado h3 {
+    font-size: 1rem;
+    margin-bottom: 5px;
+  }
+  #info-valores {
+    padding: 8px;
+  }
+  #info-valores h3 {
+    font-size: 0.9rem;
+  }
+  #tabela-valores {
+    gap: 5px;
+  }
+  .valor-item {
+    padding: 2px 6px;
+    font-size: 0.7em;
+    gap: 3px;
+  }
+  .valor-item-icon {
+    font-size: 1em;
+  }
+  #action-panel {
+    padding: 8px;
+    flex-direction: column;
+    gap: 8px;
+  }
+  #notification-area {
+    font-size: 0.9em;
+    text-align: center;
+    min-width: auto;
+  }
+  #action-buttons {
+    width: 100%;
+    justify-content: center;
+  }
+  #action-buttons button {
+    flex: 1;
+    min-width: 80px;
+    padding: 10px 8px;
+    font-size: 0.8em;
+  }
+  #trade-indicator {
+    font-size: 0.75em;
+    justify-content: center;
+  }
+  .trade-item {
+    font-size: 0.7em;
+    padding: 2px 6px;
+  }
+  .modal-overlay {
+    padding: 10px;
+  }
+  .modal-content {
+    padding: 15px;
+    max-width: 95vw;
+    font-size: 1.4rem;
+  }
+  .modal-content h2 {
+    font-size: 1.3rem;
+  }
+  .modal-buttons button {
+    padding: 8px 15px;
+    font-size: 0.9em;
+    flex: 1;
+    min-width: 80px;
+  }
+  .regras-texto {
+    font-size: 0.85em;
+    max-height: 50vh;
+  }
+  .vencedor-texto {
+    font-size: 1.1em;
+  }
+  .rodada-resumo {
+    font-size: 0.8em;
+  }
+  .rodada-resumo > div {
+    padding: 4px 6px;
+  }
+  .difficulty-name {
+    font-size: 1.2rem;
+  }
+  .difficulty-slider-container {
+    padding: 15px;
+  }
+  .tutorial-tooltip {
+    max-width: 280px;
+    padding: 15px;
+  }
+  .tutorial-tooltip h3 {
+    font-size: 1rem;
+  }
+  .marker {
+    font-size: 0.65rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .card {
+    width: clamp(40px, 18vw, 55px);
+    height: clamp(56px, 25.2vw, 77px);
+  }
+  .card-icon {
+    font-size: clamp(14px, 8vw, 20px);
+  }
+  .card-name {
+    font-size: clamp(5px, 2.5vw, 8px);
+  }
+  #action-buttons button {
+    font-size: 0.75em;
+    padding: 8px 6px;
+  }
+  #game-info {
+    font-size: 0.7em;
+  }
+  .stats p {
+    font-size: 0.7em;
+  }
+}

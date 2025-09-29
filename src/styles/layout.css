@@ -1,0 +1,90 @@
+#game-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: calc(100vh - 20px);
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 8px 15px;
+  background-color: var(--cor-tabuleiro);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+  font-size: 1.5rem;
+}
+
+#game-info {
+  display: flex;
+  gap: 15px;
+  font-size: 0.9em;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+
+.player-area,
+#central-area,
+#info-valores {
+  background-color: var(--cor-tabuleiro);
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.player-area {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: auto;
+}
+
+.player-info {
+  text-align: center;
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.player-info h2 {
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+}
+
+.stats p {
+  margin: 2px 0;
+  font-size: 0.85em;
+}
+
+.hand {
+  display: flex;
+  gap: 0.5vw;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  flex-grow: 1;
+  min-height: 80px;
+  padding: 5px;
+}
+
+#central-area {
+  display: flex;
+  gap: 15px;
+}
+
+#mercado {
+  flex-grow: 1;
+}
+
+#mercado h3 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  text-align: center;
+}
