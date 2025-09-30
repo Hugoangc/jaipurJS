@@ -1,21 +1,19 @@
+import { TipoCarta, Carta } from "./game.js";
+
 const cacheTransposicao = new Map(); // Cache global para estados já avaliados
 const MAX_CACHE_SIZE = 10000;
 
 function gerarHashEstado(estado) {
   const j1 = estado.jogador1;
   const j2 = estado.jogador2;
-
-  const contJ1 = {};
-  const contJ2 = {};
-
+  const contJ1 = {},
+    contJ2 = {};
   j1.mao.forEach((c) => (contJ1[c.tipo] = (contJ1[c.tipo] || 0) + 1));
   j2.mao.forEach((c) => (contJ2[c.tipo] = (contJ2[c.tipo] || 0) + 1));
-
   const mercado = estado.mercado.cartas
     .map((c) => c.tipo)
     .sort()
     .join("");
-
   return `${JSON.stringify(contJ1)}_${JSON.stringify(
     contJ2
   )}_${mercado}_${j1.vaca_count()}_${j2.vaca_count()}_${estado.turno % 2}`;
@@ -41,11 +39,11 @@ function gerarCombinacoes(arrayEntrada, tamanho) {
 function avaliar_estado(estado, jogadorMax, jogadorMin) {
   const calcular_pontuacao = (jogador, mercado) => {
     let pontuacao = 0;
-    const W_FICHAS = 10;
-    const W_VACAS = 3;
-    const W_VALOR_POTENCIAL = 0.5;
-    const W_MAO_GRANDE = 2;
-    const W_MAO_CHEIA = -15;
+    const W_FICHAS = 10,
+      W_VACAS = 3,
+      W_VALOR_POTENCIAL = 0.5,
+      W_MAO_GRANDE = 2,
+      W_MAO_CHEIA = -15;
 
     // Componente 1: Pontos das fichas já coletadas
     const pontosDeFichas = jogador.fichas_coletadas.reduce(
@@ -62,6 +60,7 @@ function avaliar_estado(estado, jogadorMax, jogadorMin) {
     jogador.mao.forEach((carta) => {
       contagemMao[carta.tipo] = (contagemMao[carta.tipo] || 0) + 1;
       // Adiciona o valor potencial com base na melhor ficha disponível no mercado
+
       if (mercado.fichas[carta.tipo] && mercado.fichas[carta.tipo].length > 0) {
         const melhorFichaValor =
           mercado.fichas[carta.tipo][
@@ -70,22 +69,16 @@ function avaliar_estado(estado, jogadorMax, jogadorMin) {
         pontuacao += melhorFichaValor * W_VALOR_POTENCIAL;
       }
     });
-
     for (const tipo in contagemMao) {
       if (contagemMao[tipo] >= 3) pontuacao += contagemMao[tipo] * W_MAO_GRANDE;
     }
 
     // Componente 4: Penalidade por mão cheia
-    if (jogador.mao.length >= 7) {
-      pontuacao += W_MAO_CHEIA;
-    }
-
+    if (jogador.mao.length >= 7) pontuacao += W_MAO_CHEIA;
     return pontuacao;
   };
-
   const pontuacaoMax = calcular_pontuacao(jogadorMax, estado.mercado);
   const pontuacaoMin = calcular_pontuacao(jogadorMin, estado.mercado);
-
   return pontuacaoMax - pontuacaoMin;
 }
 
@@ -111,7 +104,6 @@ function gerar_jogadas_possiveis(
     const limite = limitarAcoes
       ? Math.min(3, cartasMercado.length)
       : cartasMercado.length;
-
     for (let i = 0; i < limite; i++) {
       if (cartasMercado[i].tipo !== TipoCarta.VACA) {
         const novo_estado = estado_atual.clone();
@@ -170,7 +162,6 @@ function gerar_jogadas_possiveis(
           (q) => q >= minVenda && q <= qtdTotal
         )
       : Array.from({ length: qtdTotal - minVenda + 1 }, (_, i) => i + minVenda);
-
     for (const qtdVender of vendasConsiderar) {
       const novo_estado = estado_atual.clone();
       const jogador =
@@ -188,15 +179,13 @@ function gerar_jogadas_possiveis(
   // PODA 3: Limitar trocas em profundidades baixas
   if (!limitarAcoes || profundidade_restante > 2) {
     const LIMITE_TROCA = limitarAcoes ? 2 : 3;
-    const MAX_COMBOS_POR_TAMANHO = 10; // Limitar combinações
-
+    const MAX_COMBOS_POR_TAMANHO = 10;
     const cartasMercadoParaTroca = [];
     estado_atual.mercado.cartas.forEach((carta, indice) => {
       if (carta.tipo !== TipoCarta.VACA) {
         cartasMercadoParaTroca.push({ carta, indice });
       }
     });
-
     const cartasJogadorParaTroca = [];
     jogadorDaVez.mao.forEach((carta, indice) =>
       cartasJogadorParaTroca.push({ carta, indice, origem: "mao" })
@@ -208,14 +197,13 @@ function gerar_jogadas_possiveis(
         origem: "vaca",
       });
     }
-
     const VALORES_HEURISTICOS = {
       QUEIJO: 8,
       OURO: 7,
       CAFE: 6,
       LEITE: 4,
       DOCE_DE_LEITE: 4,
-      COURO: 3,
+      BATATA: 3,
       VACA: 1,
     };
 
@@ -226,7 +214,6 @@ function gerar_jogadas_possiveis(
       LIMITE_TROCA
     );
     const tamanhoMin = limitarAcoes ? Math.min(2, tamanhoMax) : 2;
-
     for (let k = tamanhoMin; k <= tamanhoMax; k++) {
       let combosMercado = gerarCombinacoes(cartasMercadoParaTroca, k);
       let combosJogador = gerarCombinacoes(cartasJogadorParaTroca, k);
@@ -246,11 +233,9 @@ function gerar_jogadas_possiveis(
           .slice(0, MAX_COMBOS_POR_TAMANHO)
           .map((item) => item.combo);
       }
-
       if (combosJogador.length > MAX_COMBOS_POR_TAMANHO) {
         combosJogador = combosJogador.slice(0, MAX_COMBOS_POR_TAMANHO);
       }
-
       combosMercado.forEach((comboM) => {
         const valorRecebido = comboM.reduce(
           (acc, c) => acc + VALORES_HEURISTICOS[c.carta.tipo],
@@ -259,25 +244,17 @@ function gerar_jogadas_possiveis(
 
         // Só considerar as 5 melhores trocas para cada combo do mercado
         let trocasValidas = [];
-
         combosJogador.forEach((comboJ) => {
           const valorDado = comboJ.reduce(
             (acc, c) => acc + VALORES_HEURISTICOS[c.carta.tipo],
             0
           );
-
           const fatorDeMelhora = limitarAcoes ? 1.5 : 1.2;
-          if (valorRecebido < valorDado * fatorDeMelhora) {
-            return;
-          }
-
+          if (valorRecebido < valorDado * fatorDeMelhora) return;
           const numCartasMaoDadas = comboJ.filter(
             (c) => c.origem === "mao"
           ).length;
-          if (jogadorDaVez.mao.length - numCartasMaoDadas + k > 7) {
-            return;
-          }
-
+          if (jogadorDaVez.mao.length - numCartasMaoDadas + k > 7) return;
           trocasValidas.push({ comboJ, valorGanho: valorRecebido - valorDado });
         });
 
@@ -291,10 +268,8 @@ function gerar_jogadas_possiveis(
               novo_estado.turno % 2 !== 0
                 ? novo_estado.jogador1
                 : novo_estado.jogador2;
-
             const cartasParaJogador = comboM.map((c) => c.carta);
             const cartasParaMercado = comboJ.map((c) => c.carta);
-
             comboM
               .map((c) => c.indice)
               .sort((a, b) => b - a)
@@ -333,11 +308,9 @@ function minimax_alfabeta(
   // Verificar cache de transposição
   const hashEstado = gerarHashEstado(estado_node);
   const entradaCache = cacheTransposicao.get(hashEstado);
-
   if (entradaCache && entradaCache.profundidade >= profundidade) {
     return entradaCache.valor;
   }
-
   if (
     profundidade === 0 ||
     estado_node.mercado.tres_pilhas_vazias() ||
@@ -357,7 +330,6 @@ function minimax_alfabeta(
       : estado_node.turno % 2 !== 0
       ? estado_node.jogador1
       : estado_node.jogador2;
-
     const valor = avaliar_estado(estado_node, jMax, jMin);
 
     // Guardar no cache
@@ -370,21 +342,16 @@ function minimax_alfabeta(
       keysToDelete.forEach((key) => cacheTransposicao.delete(key));
     }
     cacheTransposicao.set(hashEstado, { valor, profundidade });
-
     return valor;
   }
-
   const proximas_jogadas = gerar_jogadas_possiveis(
     estado_node,
     dificuldade,
     profundidade
   );
-
   if (proximas_jogadas.length === 0) {
     return eh_jogador_max ? -Infinity : Infinity;
   }
-
-  // Ordenação heurística para poda
   const jogadorMaxAtual = eh_jogador_max
     ? estado_node.turno % 2 !== 0
       ? estado_node.jogador1
@@ -399,10 +366,9 @@ function minimax_alfabeta(
     : estado_node.turno % 2 !== 0
     ? estado_node.jogador1
     : estado_node.jogador2;
-
-  // PODA 5: Em profundidades baixas, considerar apenas as melhores jogadas
   let jogadasParaAvaliar = proximas_jogadas;
   if (profundidade <= 2 && proximas_jogadas.length > 15) {
+    // PODA 5: Em profundidades baixas, considerar apenas as melhores jogadas
     jogadasParaAvaliar = proximas_jogadas
       .map((jogada) => ({
         jogada,
@@ -418,9 +384,7 @@ function minimax_alfabeta(
       return eh_jogador_max ? pontuacaoB - pontuacaoA : pontuacaoA - pontuacaoB;
     });
   }
-
   let resultadoValor;
-
   if (eh_jogador_max) {
     let melhor_valor = -Infinity;
     for (const filho of jogadasParaAvaliar) {
@@ -454,30 +418,24 @@ function minimax_alfabeta(
     }
     resultadoValor = pior_valor;
   }
-
-  // Guardar no cache
   cacheTransposicao.set(hashEstado, { valor: resultadoValor, profundidade });
-
   return resultadoValor;
 }
 
-function encontrar_melhor_jogada_alfabeta(
+export function encontrar_melhor_jogada_alfabeta(
   estado_atual,
   profundidade,
   dificuldade
 ) {
-  // Limpar cache periodicamente
   if (cacheTransposicao.size > MAX_CACHE_SIZE * 1.5) {
     cacheTransposicao.clear();
   }
-
   const proximas_jogadas = gerar_jogadas_possiveis(
     estado_atual,
     dificuldade,
     profundidade
   );
   if (proximas_jogadas.length === 0) return estado_atual;
-
   const jogadorMax =
     estado_atual.turno % 2 !== 0
       ? estado_atual.jogador1
@@ -492,7 +450,6 @@ function encontrar_melhor_jogada_alfabeta(
     jogada,
     valorHeuristico: avaliar_estado(jogada, jogadorMax, jogadorMin),
   }));
-
   jogadasComValor.sort((a, b) => b.valorHeuristico - a.valorHeuristico);
 
   // PODA 6: profundidade 4+, limitar ainda mais as jogadas consideradas
@@ -502,12 +459,10 @@ function encontrar_melhor_jogada_alfabeta(
   } else if (profundidade >= 3 && jogadasComValor.length > 15) {
     jogadasParaAvaliar = jogadasComValor.slice(0, 15);
   }
-
   let melhor_jogada = jogadasParaAvaliar[0].jogada;
   let melhor_valor = -Infinity;
   let alpha = -Infinity;
   let beta = Infinity;
-
   for (const { jogada } of jogadasParaAvaliar) {
     const valor_da_jogada = minimax_alfabeta(
       jogada,
@@ -522,13 +477,9 @@ function encontrar_melhor_jogada_alfabeta(
       melhor_jogada = jogada;
     }
     alpha = Math.max(alpha, melhor_valor);
-
-    // Corte caso encontre uma jogada boa
     if (profundidade >= 4 && melhor_valor > 100) {
       break;
     }
   }
-
   return melhor_jogada;
 }
-

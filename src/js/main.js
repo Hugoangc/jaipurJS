@@ -1,12 +1,33 @@
-let tutorialSystem = new TutorialSystem();
-window.tutorialSystem = tutorialSystem;
+// ========================================================================
+// 1. IMPORTAÇÕES
+// ========================================================================
+import {
+  Carta,
+  Ficha,
+  Baralho,
+  Mercado,
+  Jogador,
+  EstadoJogo,
+  TipoCarta,
+} from "./game.js";
+import { encontrar_melhor_jogada_alfabeta } from "./ai.js";
+import { TutorialSystem } from "./tutorial.js";
 
+// ========================================================================
+// 2. VARIÁVEIS DE ESTADO DO JOGO
+// ========================================================================
 let estadoAtual;
 let selecao = { mao: [], mercado: [], vacaCount: 0 };
 let historicoRodadas = [];
 let jogador1 = new Jogador("Você");
 let jogador2 = new Jogador("Oponente IA");
+let tutorialSystem = new TutorialSystem();
+let PROFUNDIDADE_IA;
+let NOME_DIFICULDADE_IA;
 
+// ========================================================================
+// 3. CONSTANTES E REFERÊNCIAS AO DOM
+// ========================================================================
 const CARTA_VISUALS = {
   QUEIJO: { icon: "🧀", name: "Queijo" },
   OURO: { icon: "💰", name: "Ouro" },
@@ -41,19 +62,22 @@ const mercadoCartasEl = get("mercado-cartas"),
   cartasBaralhoEl = get("cartas-baralho"),
   turnoAtualEl = get("turno-atual"),
   notificationTextEl = get("notification-text");
-const placarMd3El = get("placar-md3");
-const dificuldadeJogoEl = get("dificuldade-jogo");
-const tabelaValoresEl = get("tabela-valores");
-const tradeIndicatorEl = get("trade-indicator");
+const placarMd3El = get("placar-md3"),
+  dificuldadeJogoEl = get("dificuldade-jogo"),
+  tabelaValoresEl = get("tabela-valores"),
+  tradeIndicatorEl = get("trade-indicator");
 const btnVender = get("btn-vender"),
   btnTrocar = get("btn-trocar"),
   btnPegarVacas = get("btn-pegar-vacas"),
   btnDesistir = get("btn-desistir");
-const modalFimDeJogo = get("modal-fim-de-jogo");
-const vencedorFinalEl = get("vencedor-final");
-const detalhesRodadasEl = get("detalhes-rodadas");
-const btnJogarNovamente = get("btn-jogar-novamente");
+const modalFimDeJogo = get("modal-fim-de-jogo"),
+  vencedorFinalEl = get("vencedor-final"),
+  detalhesRodadasEl = get("detalhes-rodadas"),
+  btnJogarNovamente = get("btn-jogar-novamente");
 
+// ========================================================================
+// 4. FUNÇÕES DE LÓGICA E RENDERIZAÇÃO
+// ========================================================================
 function notificar(mensagem) {
   notificationTextEl.textContent = mensagem;
 }
@@ -87,13 +111,6 @@ function renderizarTabelaFixa() {
   }
 }
 
-function onVacaStackRightClick(event) {
-  event.preventDefault();
-  if (selecao.vacaCount > 0) {
-    selecao.vacaCount--;
-    atualizarIndicadorTroca();
-  }
-}
 function renderizar() {
   const j1 = estadoAtual.jogador1,
     j2 = estadoAtual.jogador2;
@@ -114,16 +131,14 @@ function renderizar() {
     const stack = document.createElement("div");
     stack.className = "vaca-stack";
     stack.dataset.count = j1.vaca_count();
-
-    for (let i = 0; i < j1.vaca_count(); i++) {
+    for (let i = 0; i < Math.min(5, j1.vaca_count()); i++) {
+      // Limita a 5 cartas visuais
       stack.appendChild(
         criarElementoCarta(new Carta(TipoCarta.VACA), i, "vaca")
       );
     }
-
     stack.addEventListener("click", onVacaStackClick);
     stack.addEventListener("contextmenu", onVacaStackRightClick);
-
     j1MaoEl.appendChild(stack);
   }
 
@@ -138,7 +153,7 @@ function renderizar() {
     const stack = document.createElement("div");
     stack.className = "vaca-stack";
     stack.dataset.count = j2.vaca_count();
-    for (let i = 0; i < j2.vaca_count(); i++)
+    for (let i = 0; i < Math.min(5, j2.vaca_count()); i++)
       stack.appendChild(
         criarElementoCarta(new Carta(TipoCarta.VACA), i, "oponente-vaca")
       );
@@ -155,29 +170,23 @@ function renderizar() {
   limparSelecao();
 }
 
-btnVender.addEventListener("click", onVenderClick);
-btnTrocar.addEventListener("click", onTrocarClick);
-btnPegarVacas.addEventListener("click", onPegarVacasClick);
-btnDesistir.addEventListener("click", onDesistirClick);
-btnJogarNovamente.addEventListener("click", () => location.reload());
-
 function limparSelecao() {
   selecao = { mao: [], mercado: [], vacaCount: 0 };
   document
-    .querySelectorAll(".card.selected")
+    .querySelectorAll(".card.selected, .vaca-stack.selected")
     .forEach((c) => c.classList.remove("selected"));
   atualizarIndicadorTroca();
 }
 
 function onCartaClick(cartaEl) {
-  if (modalFimDeJogo.style.display === "flex") {
-    return;
-  }
+  if (modalFimDeJogo.style.display === "flex") return;
+
   const origem = cartaEl.dataset.origem;
   if (!["mao", "mercado"].includes(origem)) return;
 
   const indice = parseInt(cartaEl.dataset.indice);
   const j1 = estadoAtual.jogador1;
+
   if (
     origem === "mercado" &&
     selecao.mao.length === 0 &&
@@ -191,7 +200,7 @@ function onCartaClick(cartaEl) {
       return notificar("Sua mão está cheia (limite de 7 cartas).");
     j1.pegar_carta(estadoAtual.mercado.cartas.splice(indice, 1)[0]);
     estadoAtual.mercado.repor(estadoAtual.baralho);
-    proximoTurno(`Você pegou ${cartaComprada.tipo}.`);
+    proximoTurno(`Você pegou ${CARTA_VISUALS[cartaComprada.tipo].name}.`);
     return;
   }
 
@@ -205,12 +214,11 @@ function onCartaClick(cartaEl) {
   }
   atualizarIndicadorTroca();
 }
+
 function onVacaStackClick(event) {
   event.preventDefault();
   const totalVacas = estadoAtual.jogador1.vaca_count();
-  if (totalVacas === 0) {
-    return;
-  }
+  if (totalVacas === 0) return;
   if (selecao.vacaCount < totalVacas) {
     selecao.vacaCount++;
   } else {
@@ -226,23 +234,18 @@ function onVacaStackRightClick(event) {
     atualizarIndicadorTroca();
   }
 }
+
 function atualizarIndicadorTroca() {
   const { mao, mercado, vacaCount } = selecao;
-
   tradeIndicatorEl.innerHTML = "";
-
-  if (mao.length === 0 && mercado.length === 0 && vacaCount === 0) {
-    return;
-  }
+  if (mao.length === 0 && mercado.length === 0 && vacaCount === 0) return;
 
   let texto = "<span>Seleção para troca: </span>";
   const partes = [];
-
-  if (vacaCount > 0) {
-    partes.push(`<span id="vaca-trade-indicator" class="trade-item" title="Clique para remover uma vaca">
-                    🐄 ${vacaCount} Vaca(s)
-                 </span>`);
-  }
+  if (vacaCount > 0)
+    partes.push(
+      `<span id="vaca-trade-indicator" class="trade-item" title="Clique para remover uma vaca">🐄 ${vacaCount} Vaca(s)</span>`
+    );
   if (mao.length > 0)
     partes.push(`<span class="trade-item">✋ ${mao.length} da mão</span>`);
   if (mercado.length > 0)
@@ -296,7 +299,7 @@ function onVenderClick() {
   );
   if (sucesso) {
     proximoTurno(
-      `Você vendeu ${quantidade} ${tipoParaVender} e coletou as fichas.`
+      `Você vendeu ${quantidade} ${CARTA_VISUALS[tipoParaVender].name}.`
     );
   } else {
     notificar(
@@ -312,39 +315,29 @@ function onTrocarClick() {
   const cartasMercadoSel = selecao.mercado.map(
     (i) => estadoAtual.mercado.cartas[i]
   );
-
-  if (cartasDoJogadorCount === 0 && cartasMercadoSel.length === 0) {
+  if (cartasDoJogadorCount === 0 && cartasMercadoSel.length === 0)
     return notificar("Selecione cartas para trocar.");
-  }
-
-  if (cartasDoJogadorCount !== cartasMercadoSel.length) {
+  if (cartasDoJogadorCount !== cartasMercadoSel.length)
     return notificar(
       "Para trocar, selecione o mesmo número de cartas da sua mão/vacas e do mercado."
     );
-  }
-
   if (cartasMercadoSel.some((c) => c.tipo === TipoCarta.VACA))
     return notificar("Você não pode pegar vacas em uma troca.");
-
-  const maoAtual = j1.mao.length;
-  const cartasDadas = selecao.mao.length;
-  const cartasRecebidas = selecao.mercado.length;
+  const maoAtual = j1.mao.length,
+    cartasDadas = selecao.mao.length,
+    cartasRecebidas = selecao.mercado.length;
   const maoFinal = maoAtual - cartasDadas + cartasRecebidas;
-
-  if (maoFinal > 7) {
+  if (maoFinal > 7)
     return notificar(
       `Troca inválida! Sua mão ficaria com ${maoFinal} cartas (limite de 7).`
     );
-  }
 
   const indMao = selecao.mao.sort((a, b) => b - a),
     indMercado = selecao.mercado.sort((a, b) => b - a);
   const paraMercado = [],
     paraMao = [];
   indMao.forEach((i) => paraMercado.push(j1.mao.splice(i, 1)[0]));
-  for (let i = 0; i < selecao.vacaCount; i++) {
-    paraMercado.push(j1.vacas.pop());
-  }
+  for (let i = 0; i < selecao.vacaCount; i++) paraMercado.push(j1.vacas.pop());
   indMercado.forEach((i) =>
     paraMao.push(estadoAtual.mercado.cartas.splice(i, 1)[0])
   );
@@ -357,7 +350,6 @@ function onDesistirClick() {
   notificar(
     "Você desistiu da rodada. O oponente recebe um Selo de Excelência."
   );
-
   const resumoRodada = {
     rodada: historicoRodadas.length + 1,
     placarJ1: "Desistência",
@@ -365,13 +357,11 @@ function onDesistirClick() {
     vencedor: estadoAtual.jogador2.nome,
   };
   historicoRodadas.push(resumoRodada);
-
   estadoAtual.jogador2.selos_excelencia++;
   document.body.style.pointerEvents = "none";
-
   setTimeout(() => {
     renderizar();
-    if (estadoAtual.jogador2.selos_excelencia === 2) {
+    if (estadoAtual.jogador2.selos_excelencia >= 2) {
       exibirResumoFinalDoJogo();
     } else {
       iniciarNovaRodada();
@@ -390,82 +380,18 @@ function proximoTurno(mensagem) {
       document.body.style.pointerEvents = "none";
       notificar("Oponente está pensando...");
       setTimeout(() => {
-        function finalizarJogadaIA(melhorJogada) {
-          if (!melhorJogada) {
-            console.warn(
-              "Nenhuma jogada da IA foi encontrada. Buscando fallback de profundidade 1."
-            );
-            melhorJogada = encontrar_melhor_jogada_alfabeta(
-              estadoAtual.clone(),
-              1,
-              NOME_DIFICULDADE_IA
-            );
-          }
-
-          estadoAtual = melhorJogada;
-          notificar("Oponente jogou. É a sua vez.");
-          document.body.style.pointerEvents = "auto";
-          renderizar();
-
-          if (verificarFimDeRodada()) {
-            fimDeRodada();
-          }
-        }
-
-        if (
-          NOME_DIFICULDADE_IA === "Extremo" ||
-          NOME_DIFICULDADE_IA === "Difícil"
-        ) {
-          console.log("IA Extrema pensando com limite de tempo...");
-          const TEMPO_LIMITE_MS = 2000;
-          const inicio = performance.now();
-          let melhorJogadaGlobal = null;
-          let profundidadeAtual = 1;
-
-          function buscarEmProfundidadeIterativa() {
-            if (
-              performance.now() - inicio > TEMPO_LIMITE_MS ||
-              profundidadeAtual > PROFUNDIDADE_IA
-            ) {
-              console.log(
-                `Busca finalizada. Usando melhor jogada da profundidade ${
-                  profundidadeAtual - 1
-                }.`
-              );
-              finalizarJogadaIA(melhorJogadaGlobal);
-              return;
-            }
-
-            console.log(
-              `Iniciando busca na profundidade ${profundidadeAtual}...`
-            );
-            const cloneEstado = estadoAtual.clone();
-
-            const melhorJogadaDaProfundidade = encontrar_melhor_jogada_alfabeta(
-              cloneEstado,
-              profundidadeAtual,
-              NOME_DIFICULDADE_IA
-            );
-
-            if (performance.now() - inicio <= TEMPO_LIMITE_MS) {
-              melhorJogadaGlobal = melhorJogadaDaProfundidade;
-            }
-
-            profundidadeAtual++;
-            setTimeout(buscarEmProfundidadeIterativa, 0);
-          }
-          buscarEmProfundidadeIterativa();
-        } else {
-          console.log(
-            `IA Padrão pensando com profundidade fixa: ${PROFUNDIDADE_IA}`
-          );
-          const cloneEstado = estadoAtual.clone();
-          const melhorJogada = encontrar_melhor_jogada_alfabeta(
-            cloneEstado,
-            PROFUNDIDADE_IA,
-            NOME_DIFICULDADE_IA
-          );
-          finalizarJogadaIA(melhorJogada);
+        const cloneEstado = estadoAtual.clone();
+        const melhorJogada = encontrar_melhor_jogada_alfabeta(
+          cloneEstado,
+          PROFUNDIDADE_IA,
+          NOME_DIFICULDADE_IA
+        );
+        estadoAtual = melhorJogada;
+        notificar("Oponente jogou. É a sua vez.");
+        document.body.style.pointerEvents = "auto";
+        renderizar();
+        if (verificarFimDeRodada()) {
+          fimDeRodada();
         }
       }, 500);
     }
@@ -477,86 +403,67 @@ function verificarFimDeRodada() {
     estadoAtual.baralho.vazio() || estadoAtual.mercado.tres_pilhas_vazias()
   );
 }
+
 function fimDeRodada() {
   document.body.style.pointerEvents = "none";
-  const j1 = estadoAtual.jogador1;
-  const j2 = estadoAtual.jogador2;
-
+  const j1 = estadoAtual.jogador1,
+    j2 = estadoAtual.jogador2;
   let pontosVacasJ1 = j1.vaca_count() > j2.vaca_count() ? 5 : 0;
   let pontosVacasJ2 = j2.vaca_count() > j1.vaca_count() ? 5 : 0;
-
+  if (j1.vaca_count() === j2.vaca_count() && j1.vaca_count() > 0) {
+    pontosVacasJ1 = 5;
+    pontosVacasJ2 = 5;
+  }
   j1.pontos_rodada = j1.calcular_pontos_rodada() + pontosVacasJ1;
   j2.pontos_rodada = j2.calcular_pontos_rodada() + pontosVacasJ2;
-
   let vencedorMsg = `Empate na rodada!`;
+  let vencedorDaRodada = null;
   if (j1.pontos_rodada > j2.pontos_rodada) {
     j1.selos_excelencia++;
     vencedorMsg = `${j1.nome} vence a rodada!`;
+    vencedorDaRodada = j1.nome;
   } else if (j2.pontos_rodada > j1.pontos_rodada) {
     j2.selos_excelencia++;
     vencedorMsg = `${j2.nome} vence a rodada!`;
+    vencedorDaRodada = j2.nome;
   }
-
   historicoRodadas.push({
     rodada: historicoRodadas.length + 1,
     placarJ1: j1.pontos_rodada,
     placarJ2: j2.pontos_rodada,
+    vencedor: vencedorDaRodada,
   });
-
   renderizar();
   notificar(
-    `FIM DA RODADA! Placar Final: Você ${j1.pontos_rodada} x ${j2.pontos_rodada} Oponente.`
+    `FIM DA RODADA! Placar: Você ${j1.pontos_rodada} x ${j2.pontos_rodada} Oponente.`
   );
-
   setTimeout(() => {
-    if (j1.selos_excelencia === 2 || j2.selos_excelencia === 2) {
+    if (j1.selos_excelencia >= 2 || j2.selos_excelencia >= 2) {
       exibirResumoFinalDoJogo();
     } else {
-      notificar(`${vencedorMsg} Clique em 'Próxima Rodada' para continuar.`);
-      btnPegarVacas.textContent = "Próxima Rodada";
-      btnPegarVacas.onclick = iniciarNovaRodada;
-      btnVender.style.display = "none";
-      btnTrocar.style.display = "none";
-      btnDesistir.style.display = "none";
-      document.body.style.pointerEvents = "auto";
+      notificar(`${vencedorMsg} Preparando próxima rodada...`);
+      setTimeout(iniciarNovaRodada, 2000);
     }
   }, 4000);
 }
 
 function exibirResumoFinalDoJogo() {
   document.body.style.pointerEvents = "auto";
-
-  const j1 = estadoAtual.jogador1;
-  const j2 = estadoAtual.jogador2;
-  const vencedorFinal = j1.selos_excelencia === 2 ? j1.nome : j2.nome;
-
-  vencedorFinalEl.textContent = `${vencedorFinal} é o grande vencedor!`;
-
-  detalhesRodadasEl.innerHTML = `
-        <div class="rodada-resumo rodada-header">
-            <div>Rodada</div>
-            <div>${j1.nome}</div>
-            <div>${j2.nome}</div>
-        </div>
-    `;
-
+  const j1 = estadoAtual.jogador1,
+    j2 = estadoAtual.jogador2;
+  const vencedorFinal = j1.selos_excelencia >= 2 ? j1.nome : j2.nome;
+  vencedorFinalEl.textContent = `${vencedorFinal} é o grande tropeiro!`;
+  detalhesRodadasEl.innerHTML = `<div class="rodada-resumo rodada-header"><div>Rodada</div><div>${j1.nome}</div><div>${j2.nome}</div></div>`;
   historicoRodadas.forEach((resumo) => {
     const linha = document.createElement("div");
     linha.className = "rodada-resumo";
-    linha.innerHTML = `
-            <div>${resumo.rodada}</div>
-            <div>${resumo.placarJ1}</div>
-            <div>${resumo.placarJ2}</div>
-        `;
+    linha.innerHTML = `<div>${resumo.rodada}</div><div>${resumo.placarJ1}</div><div>${resumo.placarJ2}</div>`;
     detalhesRodadasEl.appendChild(linha);
   });
-
   modalFimDeJogo.style.display = "flex";
 }
 
 function iniciarNovaRodada() {
-  btnPegarVacas.textContent = "Pegar Vacas";
-  btnPegarVacas.onclick = onPegarVacasClick;
   btnVender.style.display = "inline-block";
   btnTrocar.style.display = "inline-block";
   btnDesistir.style.display = "inline-block";
@@ -568,29 +475,157 @@ function iniciarJogo() {
     jogador1.selos_excelencia = estadoAtual.jogador1.selos_excelencia;
     jogador2.selos_excelencia = estadoAtual.jogador2.selos_excelencia;
   }
-
   jogador1.resetarParaNovaRodada();
   jogador2.resetarParaNovaRodada();
-
   const baralho = new Baralho();
   const mercado = new Mercado();
   mercado.inicializar(baralho);
-
   for (let i = 0; i < 5; i++) {
     jogador1.pegar_carta(baralho.comprar());
     jogador2.pegar_carta(baralho.comprar());
   }
-
   estadoAtual = new EstadoJogo(jogador1, jogador2, baralho, mercado, 1);
-
   if (jogador1.selos_excelencia === 0 && jogador2.selos_excelencia === 0) {
     historicoRodadas = [];
   }
-
   renderizarTabelaFixa();
   renderizar();
   notificar("Nova rodada começou. É a sua vez.");
   document.body.style.pointerEvents = "auto";
 }
 
-window.iniciarJogoComDificuldade = iniciarJogo;
+// ========================================================================
+// 6. EVENT LISTENERS (Tudo centralizado)
+// ========================================================================
+document.addEventListener("DOMContentLoaded", () => {
+  const difficultySettings = [
+    {
+      name: "Tutorial",
+      description: "Aprenda as mecânicas do jogo com orientação passo a passo",
+      depth: 1,
+      color: "#27ae60",
+    },
+    {
+      name: "Iniciante",
+      description: "Ideal para novos jogadores. IA toma decisões simples",
+      depth: 2,
+      color: "#52c77b",
+    },
+    {
+      name: "Moderado",
+      description: "Desafio equilibrado. IA pensa alguns movimentos à frente",
+      depth: 3,
+      color: "#f39c12",
+    },
+    {
+      name: "Difícil",
+      description: "Para jogadores experientes. IA analisa múltiplas jogadas",
+      depth: 4,
+      color: "#e67e22",
+    },
+    {
+      name: "Extremo",
+      description: "Desafio máximo! IA usa análise profunda e otimizações",
+      depth: 5,
+      color: "#c0392b",
+    },
+  ];
+
+  const slider = get("difficulty-slider"),
+    difficultyName = get("difficulty-name"),
+    difficultyDescription = get("difficulty-description");
+  const startButton = get("start-game-btn"),
+    markers = document.querySelectorAll(".marker"),
+    modalDificuldade = get("modal-dificuldade"),
+    difficultyDisplayHeader = get("difficulty-display-header");
+
+  difficultyDisplayHeader.addEventListener("click", () => {
+    modalDificuldade.style.display = "flex";
+  });
+
+  slider.addEventListener("input", function () {
+    const level = parseInt(this.value);
+    const setting = difficultySettings[level];
+    difficultyName.textContent = setting.name;
+    difficultyDescription.textContent = setting.description;
+    difficultyName.style.color = setting.color;
+    markers.forEach((marker, index) =>
+      marker.classList.toggle("active", index === level)
+    );
+    const isTutorial = setting.name === "Tutorial";
+    startButton.textContent = isTutorial ? "Iniciar Tutorial" : "Iniciar Jogo";
+    startButton.classList.toggle("tutorial-mode", isTutorial);
+  });
+
+  startButton.addEventListener("click", function () {
+    const level = parseInt(slider.value);
+    const setting = difficultySettings[level];
+    jogador1.selos_excelencia = 0;
+    jogador2.selos_excelencia = 0;
+    PROFUNDIDADE_IA = setting.depth;
+    NOME_DIFICULDADE_IA = setting.name;
+    modalDificuldade.style.display = "none";
+    get("game-container").style.display = "flex";
+    if (NOME_DIFICULDADE_IA === "Tutorial") {
+      setTimeout(() => {
+        tutorialSystem.start();
+      }, 500);
+    }
+    document
+      .getElementById("tutorial-mode-indicator")
+      .classList.toggle("active", NOME_DIFICULDADE_IA === "Tutorial");
+    iniciarJogo();
+  });
+
+  get("tutorial-next").addEventListener("click", () =>
+    tutorialSystem.nextStep()
+  );
+  get("tutorial-skip").addEventListener("click", () => tutorialSystem.skip());
+  get("tutorial-mode-indicator").addEventListener("click", () => {
+    if (!tutorialSystem.isActive && NOME_DIFICULDADE_IA === "Tutorial") {
+      tutorialSystem.start();
+    }
+  });
+
+  const modalRegras = get("modal-regras"),
+    btnRegras = get("btn-regras"),
+    btnFecharRegras = get("btn-fechar-regras"),
+    modalContentRegras = document.querySelector("#modal-regras .modal-content"),
+    btnToggleRegras = get("btn-toggle-regras");
+  btnRegras.addEventListener("click", () => {
+    modalContentRegras.classList.remove("mostrando-detalhes");
+    btnToggleRegras.textContent = "Ver Regras Detalhadas";
+    modalRegras.style.display = "flex";
+  });
+  btnToggleRegras.addEventListener("click", () => {
+    modalContentRegras.classList.toggle("mostrando-detalhes");
+    btnToggleRegras.textContent = modalContentRegras.classList.contains(
+      "mostrando-detalhes"
+    )
+      ? "Ver Resumo"
+      : "Ver Regras Detalhadas";
+  });
+  btnFecharRegras.addEventListener("click", () => {
+    modalRegras.style.display = "none";
+  });
+  modalRegras.addEventListener("click", (event) => {
+    if (event.target === modalRegras) modalRegras.style.display = "none";
+  });
+
+  const btnReiniciar = get("btn-reiniciar");
+  btnReiniciar.addEventListener("click", () => {
+    if (
+      confirm(
+        "Tem certeza que deseja reiniciar o jogo? Todo o progresso será perdido."
+      )
+    ) {
+      location.reload();
+    }
+  });
+
+  btnVender.addEventListener("click", onVenderClick);
+  btnTrocar.addEventListener("click", onTrocarClick);
+  btnPegarVacas.addEventListener("click", onPegarVacasClick);
+  btnDesistir.addEventListener("click", onDesistirClick);
+  btnJogarNovamente.addEventListener("click", () => location.reload());
+});

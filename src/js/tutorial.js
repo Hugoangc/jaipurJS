@@ -1,4 +1,4 @@
-class TutorialSystem {
+export class TutorialSystem {
   constructor() {
     this.steps = [
       {
@@ -91,8 +91,6 @@ class TutorialSystem {
     this.updateSpotlight(target);
     this.updateTooltip(step, target);
     this.updateProgressDots(index);
-
-    // Permitir interação com o elemento destacado
     this.enableTargetInteraction(target);
   }
 
@@ -127,7 +125,6 @@ class TutorialSystem {
       top = rect.bottom + 20;
     }
 
-    // Ajustar se sair da tela
     left = Math.max(
       10,
       Math.min(left, window.innerWidth - tooltipRect.width - 10)
@@ -184,163 +181,5 @@ class TutorialSystem {
     document.getElementById("tutorial-overlay").classList.remove("active");
     document.getElementById("tutorial-tooltip").style.display = "none";
     document.getElementById("tutorial-progress").classList.remove("active");
-
-    // Manter indicador se ainda estiver em modo tutorial
-    if (window.PROFUNDIDADE_IA === 1) {
-      document
-        .getElementById("tutorial-mode-indicator")
-        .classList.add("active");
-    } else {
-      document
-        .getElementById("tutorial-mode-indicator")
-        .classList.remove("active");
-    }
   }
 }
-
-// Configuração do Slider
-const difficultySettings = [
-  {
-    name: "Tutorial",
-    description: "Aprenda as mecânicas do jogo com orientação passo a passo",
-    depth: 1,
-    color: "#27ae60",
-  },
-  {
-    name: "Iniciante",
-    description: "Ideal para novos jogadores. IA toma decisões simples",
-    depth: 2,
-    color: "#52c77b",
-  },
-  {
-    name: "Moderado",
-    description: "Desafio equilibrado. IA pensa alguns movimentos à frente",
-    depth: 3,
-    color: "#f39c12",
-  },
-  {
-    name: "Difícil",
-    description: "Para jogadores experientes. IA analisa múltiplas jogadas",
-    depth: 4,
-    color: "#e67e22",
-  },
-  {
-    name: "Extremo",
-    description: "Desafio máximo! IA usa análise profunda e otimizações",
-    depth: 5,
-    color: "#c0392b",
-  },
-];
-
-document.addEventListener("DOMContentLoaded", () => {
-  const slider = document.getElementById("difficulty-slider");
-  const difficultyName = document.getElementById("difficulty-name");
-  const difficultyDescription = document.getElementById(
-    "difficulty-description"
-  );
-  const startButton = document.getElementById("start-game-btn");
-  const markers = document.querySelectorAll(".marker");
-  const modalDificuldade = get("modal-dificuldade");
-  const difficultyDisplayHeader = get("difficulty-display-header");
-
-  difficultyDisplayHeader.addEventListener("click", () => {
-    modalDificuldade.style.display = "flex";
-  });
-
-  slider.addEventListener("input", function () {
-    const level = parseInt(this.value);
-    const setting = difficultySettings[level];
-
-    difficultyName.textContent = setting.name;
-    difficultyDescription.textContent = setting.description;
-    difficultyName.style.color = setting.color;
-
-    markers.forEach((marker, index) => {
-      marker.classList.toggle("active", index === level);
-    });
-
-    if (setting.name === "Tutorial") {
-      startButton.textContent = "Iniciar Tutorial";
-      startButton.classList.add("tutorial-mode");
-    } else {
-      startButton.textContent = "Iniciar Jogo";
-      startButton.classList.remove("tutorial-mode");
-    }
-  });
-
-  startButton.addEventListener("click", function () {
-    const level = parseInt(slider.value);
-    const setting = difficultySettings[level];
-
-    jogador1.selos_excelencia = 0;
-    jogador2.selos_excelencia = 0;
-
-    window.PROFUNDIDADE_IA = setting.depth;
-    window.NOME_DIFICULDADE_IA = setting.name;
-
-    modalDificuldade.style.display = "none";
-    document.getElementById("game-container").style.display = "flex";
-
-    if (setting.name === "Tutorial") {
-      setTimeout(() => {
-        tutorialSystem.start();
-      }, 500);
-    }
-
-    if (typeof window.iniciarJogoComDificuldade === "function") {
-      window.iniciarJogoComDificuldade();
-    }
-  });
-
-  document.getElementById("tutorial-next").addEventListener("click", () => {
-    tutorialSystem.nextStep();
-  });
-  document.getElementById("tutorial-skip").addEventListener("click", () => {
-    tutorialSystem.skip();
-  });
-  document
-    .getElementById("tutorial-mode-indicator")
-    .addEventListener("click", () => {
-      if (!tutorialSystem.isActive && window.PROFUNDIDADE_IA === 1) {
-        tutorialSystem.start();
-      }
-    });
-  const modalRegras = get("modal-regras");
-  const btnRegras = get("btn-regras");
-  const btnFecharRegras = get("btn-fechar-regras");
-  const modalContentRegras = document.querySelector(
-    "#modal-regras .modal-content"
-  );
-  const btnToggleRegras = get("btn-toggle-regras");
-  btnRegras.addEventListener("click", () => {
-    modalContentRegras.classList.remove("mostrando-detalhes");
-    btnToggleRegras.textContent = "Ver Regras Detalhadas";
-    modalRegras.style.display = "flex";
-  });
-  btnToggleRegras.addEventListener("click", () => {
-    modalContentRegras.classList.toggle("mostrando-detalhes");
-    if (modalContentRegras.classList.contains("mostrando-detalhes")) {
-      btnToggleRegras.textContent = "Ver Resumo";
-    } else {
-      btnToggleRegras.textContent = "Ver Regras Detalhadas";
-    }
-  });
-  btnFecharRegras.addEventListener("click", () => {
-    modalRegras.style.display = "none";
-  });
-  modalRegras.addEventListener("click", (event) => {
-    if (event.target === modalRegras) {
-      modalRegras.style.display = "none";
-    }
-  });
-  const btnReiniciar = get("btn-reiniciar");
-  btnReiniciar.addEventListener("click", () => {
-    if (
-      confirm(
-        "Tem certeza que deseja reiniciar o jogo? Todo o progresso será perdido."
-      )
-    ) {
-      location.reload();
-    }
-  });
-});

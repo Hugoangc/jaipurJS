@@ -1,4 +1,4 @@
-const TipoCarta = Object.freeze({
+export const TipoCarta = Object.freeze({
   QUEIJO: "QUEIJO",
   OURO: "OURO",
   CAFE: "CAFE",
@@ -8,13 +8,13 @@ const TipoCarta = Object.freeze({
   VACA: "VACA",
 });
 
-class Carta {
+export class Carta {
   constructor(tipo) {
     this.tipo = tipo;
   }
 }
 
-class Ficha {
+export class Ficha {
   constructor(valor) {
     this.valor = valor;
   }
@@ -23,7 +23,7 @@ class Ficha {
   }
 }
 
-class Baralho {
+export class Baralho {
   constructor() {
     this.cartas = [];
     this.inicializar();
@@ -63,7 +63,7 @@ class Baralho {
   }
 }
 
-class Mercado {
+export class Mercado {
   constructor() {
     this.cartas = [];
     this.fichas = {};
@@ -136,7 +136,7 @@ class Mercado {
   }
 }
 
-class Jogador {
+export class Jogador {
   constructor(nome) {
     this.nome = nome;
     this.mao = [];
@@ -173,11 +173,9 @@ class Jogador {
     const cartasParaVender = this.mao.filter((c) => c.tipo === tipo);
     if (cartasParaVender.length < quantidade) return false;
 
-    const ehLuxo = [
-      TipoCarta.QUEIJO,
-      TipoCarta.OURO,
-      TipoCarta.CAFE,
-    ].includes(tipo);
+    const ehLuxo = [TipoCarta.QUEIJO, TipoCarta.OURO, TipoCarta.CAFE].includes(
+      tipo
+    );
     if (ehLuxo && quantidade < 2) return false;
 
     for (let i = 0; i < quantidade; i++) {
@@ -223,7 +221,7 @@ class Jogador {
   }
 }
 
-class EstadoJogo {
+export class EstadoJogo {
   constructor(jogador1, jogador2, baralho, mercado, turno) {
     this.jogador1 = jogador1;
     this.jogador2 = jogador2;
