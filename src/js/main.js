@@ -1,6 +1,3 @@
-// ========================================================================
-// 1. IMPORTAÇÕES
-// ========================================================================
 import {
   Carta,
   Ficha,
@@ -13,9 +10,8 @@ import {
 import { encontrar_melhor_jogada_alfabeta } from "./ai.js";
 import { TutorialSystem } from "./tutorial.js";
 
-// ========================================================================
-// 2. VARIÁVEIS DE ESTADO DO JOGO
-// ========================================================================
+// VARIÁVEIS DE ESTADO DO JOGO
+let isGameStarted = false;
 let estadoAtual;
 let selecao = { mao: [], mercado: [], vacaCount: 0 };
 let historicoRodadas = [];
@@ -25,9 +21,7 @@ let tutorialSystem = new TutorialSystem();
 let PROFUNDIDADE_IA;
 let NOME_DIFICULDADE_IA;
 
-// ========================================================================
-// 3. CONSTANTES E REFERÊNCIAS AO DOM
-// ========================================================================
+// CONSTANTES E REFERÊNCIAS AO DOM
 const CARTA_VISUALS = {
   QUEIJO: { icon: "🧀", name: "Queijo" },
   OURO: { icon: "💰", name: "Ouro" },
@@ -75,9 +69,7 @@ const modalFimDeJogo = get("modal-fim-de-jogo"),
   detalhesRodadasEl = get("detalhes-rodadas"),
   btnJogarNovamente = get("btn-jogar-novamente");
 
-// ========================================================================
-// 4. FUNÇÕES DE LÓGICA E RENDERIZAÇÃO
-// ========================================================================
+// FUNÇÕES DE LÓGICA E RENDERIZAÇÃO
 function notificar(mensagem) {
   notificationTextEl.textContent = mensagem;
 }
@@ -494,9 +486,7 @@ function iniciarJogo() {
   document.body.style.pointerEvents = "auto";
 }
 
-// ========================================================================
-// 6. EVENT LISTENERS (Tudo centralizado)
-// ========================================================================
+// EVENT LISTENERS
 document.addEventListener("DOMContentLoaded", () => {
   const difficultySettings = [
     {
@@ -524,9 +514,16 @@ document.addEventListener("DOMContentLoaded", () => {
       color: "#e67e22",
     },
     {
-      name: "Extremo",
-      description: "Desafio máximo! IA usa análise profunda e otimizações",
+      name: "Avançado",
+      description: "Desafio avançado! IA usa análise profunda e otimizações",
       depth: 5,
+      color: "#ce4c3dff",
+    },
+    {
+      name: "Extremo",
+      description:
+        "Desafio máximo! IA usa análises ainda mais profundas e mais otimizações",
+      depth: 6,
       color: "#c0392b",
     },
   ];
@@ -541,6 +538,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   difficultyDisplayHeader.addEventListener("click", () => {
     modalDificuldade.style.display = "flex";
+  });
+
+  modalDificuldade.addEventListener("click", (event) => {
+    if (isGameStarted && event.target === modalDificuldade) {
+      modalDificuldade.style.display = "none";
+    }
   });
 
   slider.addEventListener("input", function () {
@@ -560,12 +563,20 @@ document.addEventListener("DOMContentLoaded", () => {
   startButton.addEventListener("click", function () {
     const level = parseInt(slider.value);
     const setting = difficultySettings[level];
+
+    //Se o jogo já tiver começado a dificuldade for a mesma, não faça nada caso clique fora
+    if (isGameStarted && setting.name === NOME_DIFICULDADE_IA) {
+      modalDificuldade.style.display = "none";
+      return;
+    }
     jogador1.selos_excelencia = 0;
     jogador2.selos_excelencia = 0;
     PROFUNDIDADE_IA = setting.depth;
     NOME_DIFICULDADE_IA = setting.name;
     modalDificuldade.style.display = "none";
+    isGameStarted = true;
     get("game-container").style.display = "flex";
+
     if (NOME_DIFICULDADE_IA === "Tutorial") {
       setTimeout(() => {
         tutorialSystem.start();

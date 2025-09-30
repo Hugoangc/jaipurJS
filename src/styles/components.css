@@ -137,6 +137,8 @@
   max-width: 90vw;
   max-height: 90vh;
   overflow-y: auto;
+  position: relative;
+  min-width: 500px;
 }
 .modal-content h2 {
   margin-bottom: 15px;
@@ -260,10 +262,11 @@
   background: linear-gradient(
     to right,
     #27ae60 0%,
-    #52c77b 25%,
-    #f39c12 50%,
-    #e67e22 75%,
-    #c0392b 100%
+    #52c77b 20%,
+    #f39c12 40%,
+    #e67e22 60%,
+    #c0392b 80%,
+    #992d22 100%
   );
   outline: none;
   opacity: 0.9;
