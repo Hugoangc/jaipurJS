@@ -8,7 +8,9 @@
   gap: 10px;
   flex-wrap: wrap;
 }
+
 #notification-area {
+  text-align: center;
   font-size: 1em;
   font-weight: 500;
   flex-grow: 1;
@@ -22,6 +24,7 @@
 #trade-indicator {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
   flex-wrap: wrap;
   margin-top: 3px;
@@ -67,7 +70,7 @@
   cursor: not-allowed;
 }
 #btn-desistir {
-  background-color: #b22222;
+  background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
   padding: 8px 12px;
   font-size: 0.8em;
   font-family: "Merriweather", serif;
@@ -78,7 +81,7 @@
   transition: background-color 0.2s;
 }
 #btn-desistir:hover {
-  background-color: #8b0000;
+  background: linear-gradient(135deg, #c53030 0%, #9b2c2c 100%);
 }
 #btn-reiniciar {
   background-color: #5a3a3a;
@@ -87,6 +90,7 @@
   font-family: "Merriweather", serif;
   color: #fff;
   border: none;
+  min-height: 33px;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.2s;

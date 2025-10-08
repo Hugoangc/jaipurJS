@@ -9,18 +9,20 @@
 }
 
 header {
+  background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   padding: 8px 15px;
-  background-color: var(--cor-tabuleiro);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 3px solid #6b3410;
 }
 
 header h1 {
   font-size: 1.5rem;
+  color: white;
 }
 
 #game-info {
@@ -30,7 +32,18 @@ header h1 {
   flex-wrap: wrap;
   align-items: baseline;
 }
-
+#game-info p {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 8px;
+  border-radius: 20px;
+  color: white;
+  font-weight: 500;
+  backdrop-filter: blur(10px);
+}
+#game-info span {
+  font-weight: 700;
+  color: #ffd700;
+}
 .player-area,
 #central-area,
 #info-valores {
@@ -43,13 +56,18 @@ header h1 {
 .player-area {
   display: flex;
   justify-content: space-between;
+  gap: 20px;
   align-items: center;
   min-height: auto;
 }
 
 .player-info {
+  background: rgba(255, 255, 255, 0.6);
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: var(--sombra-suave);
   text-align: center;
-  min-width: 120px;
+  min-width: 140px;
   flex-shrink: 0;
 }
 
@@ -65,13 +83,16 @@ header h1 {
 
 .hand {
   display: flex;
-  gap: 0.5vw;
+  gap: 8px;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
   flex-grow: 1;
   min-height: 80px;
   padding: 5px;
+  /*min-height: 90px;*/
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
 }
 
 #central-area {

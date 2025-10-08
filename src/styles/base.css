@@ -6,11 +6,18 @@
   --cor-carta-verso: #a52a2a;
   --cor-tutorial: #27ae60;
   --cor-tutorial-light: #52c77b;
+  --sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --sombra-media: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --sombra-forte: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
-
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 body {
   font-family: "Roboto", sans-serif;
-  background-color: var(--cor-fundo);
+  background: linear-gradient(135deg, #fef6e7 0%, #f5e6d3 50%, #e8d5b7 100%);
   color: var(--cor-texto);
   margin: 0;
   padding: 10px;
