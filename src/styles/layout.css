@@ -6,6 +6,11 @@
   flex-direction: column;
   gap: 8px;
   min-height: calc(100vh - 20px);
+
+  user-select: none; /* Padrão */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 header {

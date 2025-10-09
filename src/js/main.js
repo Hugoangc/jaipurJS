@@ -491,38 +491,37 @@ document.addEventListener("DOMContentLoaded", () => {
   const difficultySettings = [
     {
       name: "Tutorial",
-      description: "Aprenda as mecânicas do jogo com orientação passo a passo",
+      description: "Aprenda as mecânicas do jogo com orientação passo a passo.",
       depth: 1,
       color: "#27ae60",
     },
     {
       name: "Iniciante",
-      description: "Ideal para novos jogadores. IA toma decisões simples",
+      description: "Ideal para novos jogadores. IA toma decisões simples.",
       depth: 2,
       color: "#52c77b",
     },
     {
       name: "Moderado",
-      description: "Desafio equilibrado. IA pensa alguns movimentos à frente",
+      description: "Desafio equilibrado. IA pensa alguns movimentos à frente.",
       depth: 3,
       color: "#f39c12",
     },
     {
       name: "Difícil",
-      description: "Para jogadores experientes. IA analisa múltiplas jogadas",
+      description: "Para jogadores experientes. IA analisa múltiplas jogadas.",
       depth: 4,
       color: "#e67e22",
     },
     {
       name: "Avançado",
-      description: "Desafio avançado! IA usa análise profunda e otimizações",
+      description: "Desafio avançado! IA usa uma análise mais otimizada.",
       depth: 5,
       color: "#ce4c3dff",
     },
     {
       name: "Extremo",
-      description:
-        "Desafio máximo! IA usa análises ainda mais profundas e mais otimizações",
+      description: "Desafio máximo! Algoritmo ainda mais aprimorado!",
       depth: 6,
       color: "#c0392b",
     },
@@ -564,7 +563,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const level = parseInt(slider.value);
     const setting = difficultySettings[level];
 
-    //Se o jogo já tiver começado a dificuldade for a mesma, não faça nada caso clique fora
+    //sem reset ao escolher a mesma dificuldade
     if (isGameStarted && setting.name === NOME_DIFICULDADE_IA) {
       modalDificuldade.style.display = "none";
       return;
