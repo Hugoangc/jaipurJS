@@ -555,8 +555,13 @@ document.addEventListener("DOMContentLoaded", () => {
       marker.classList.toggle("active", index === level)
     );
     const isTutorial = setting.name === "Tutorial";
+    const isExtreme = setting.name === "Extremo";
+
     startButton.textContent = isTutorial ? "Iniciar Tutorial" : "Iniciar Jogo";
     startButton.classList.toggle("tutorial-mode", isTutorial);
+
+    startButton.classList.toggle("extreme-mode", isExtreme);
+    difficultyName.classList.toggle("extreme-active", isExtreme);
   });
 
   startButton.addEventListener("click", function () {
